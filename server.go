@@ -58,6 +58,9 @@ func main() {
 		render(w, "login.html", nil)
 	})
 
+	//static files
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("web/css"))))
+
 	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
