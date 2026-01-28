@@ -16,10 +16,88 @@
         <span class="title-rune">✦</span>
     </h1>
     <nav class="spell-nav">
-        <a href="community" class="nav-spell">Community</a>
-        <a href="wallpapers" class="nav-spell active">My wallpapers</a>
-        <a href="index" class="nav-spell">Profile</a>
-        <a href="login" class ="nav-spell">Login</a>
+        <a href="/community" class="nav-spell">Community</a>
+        <a href="/wallpapers" class="nav-spell active">My wallpapers</a>
+        <a href="/profile" class="nav-spell">Profile</a>
     </nav>
     <div class="header-ornament right"></div>
 </header>
+
+<!-- Magical particles background -->
+<div class="magic-particles"></div>
+
+<!-- Main content area -->
+<main class="tome-content">
+    <!-- Upload section -->
+    <section class="upload-spell">
+        <div class="spell-circle-small">
+            <div class="circle-outer"></div>
+            <div class="circle-middle"></div>
+            <div class="circle-inner"></div>
+        </div>
+        <h2 class="section-title">
+            <span class="title-line"></span>
+            Upload New Wallpaper
+            <span class="title-line"></span>
+        </h2>
+
+        <form action="/upload" method="POST" enctype="multipart/form-data" class="upload-form">
+            <div class="upload-card">
+                <label for="wallpaper" class="upload-label">
+                    <span class="upload-icon">📁</span>
+                    <span class="upload-text">Choose your wallpaper</span>
+                    <input type="file" id="wallpaper" name="wallpaper" accept="image/*" required>
+                </label>
+                <button type="submit" class="cast-button upload-button">
+                    <span class="button-text">✨ Upload to Archive ✨</span>
+                    <span class="button-glow"></span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Wallpapers gallery -->
+    <section class="wallpaper-gallery">
+        <h2 class="section-title">
+            <span class="title-line"></span>
+            Your Collection
+            <span class="title-line"></span>
+        </h2>
+
+        {{if .Wallpapers}}
+        <div class="spell-grid">
+            {{range .Wallpapers}}
+            <div class="wallpaper-card">
+                <div class="wallpaper-image">
+                    <img src="/uploads/{{.Filename}}" alt="{{.OriginalName}}">
+                </div>
+                <div class="wallpaper-info">
+                    <h3>{{.OriginalName}}</h3>
+                    <p class="upload-date">Uploaded: {{.UploadedAt}}</p>
+                    <a href="/uploads/{{.Filename}}" download class="download-button">
+                        ⬇️ Download
+                    </a>
+                </div>
+            </div>
+            {{end}}
+        </div>
+        {{else}}
+        <div class="empty-state">
+            <p class="empty-text">No wallpapers yet... Upload your first one! ✨</p>
+        </div>
+        {{end}}
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="grimoire-footer">
+    <div class="footer-ornament"></div>
+    <p class="footer-text">
+        <span class="footer-rune">✦</span>
+        May your collection grow with you
+        <span class="footer-rune">✦</span>
+    </p>
+    <p class="footer-small">Created with ancient magic and modern code</p>
+</footer>
+</body>
+</html>
