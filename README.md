@@ -38,10 +38,10 @@ Each user can manage their own wallpapers and interact with others through socia
 - User badges
 
 ## TODO
-- [ ] Go project initialization
-- [ ] MySQL database connection
-- [ ] Authentication system
-- [ ] Wallpaper upload
+- [V] Go project initialization
+- [V] MySQL database connection
+- [~] Authentication system
+- [~] Wallpaper upload
 - [ ] Private/Public management with admin approval
 - [ ] Tags and collections
 - [ ] Search and sorting
@@ -49,9 +49,9 @@ Each user can manage their own wallpapers and interact with others through socia
 - [ ] Ratings and comments
 - [ ] Friend system
 - [ ] Notifications
-- [ ] User profiles
+- [~] User profiles
 - [ ] Badges
 - [ ] Rename WAllpapers
-
+- [ ] since pictures aren't saved when the container reboots, we need to clear the db where the pics are missing on start. (to not have only the name with a missing picture)
 ## Goal
 Build a customizable wallpaper management and sharing platform with an exhibition-style layout and community features.
