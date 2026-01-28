@@ -38,10 +38,10 @@ Each user can manage their own wallpapers and interact with others through socia
 - User badges
 
 ## TODO
-- [ ] Go project initialization
-- [ ] MySQL database connection
-- [ ] Authentication system
-- [ ] Wallpaper upload
+- [V] Go project initialization
+- [V] MySQL database connection
+- [~] Authentication system
+- [~] Wallpaper upload
 - [ ] Private/Public management with admin approval
 - [ ] Tags and collections
 - [ ] Search and sorting
@@ -49,7 +49,7 @@ Each user can manage their own wallpapers and interact with others through socia
 - [ ] Ratings and comments
 - [ ] Friend system
 - [ ] Notifications
-- [ ] User profiles
+- [~] User profiles
 - [ ] Badges
 
 ## Goal
