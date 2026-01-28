@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter the Grimoire - Login</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
+<!-- Magical particles background -->
+<div class="magic-particles"></div>
+
+<!-- Login container -->
+<div class="login-realm">
+    <!-- Floating magical circles -->
+    <div class="login-spell-circle">
+        <div class="circle-outer"></div>
+        <div class="circle-middle"></div>
+        <div class="circle-inner"></div>
+    </div>
+
+    <!-- Main login card -->
+    <div class="grimoire-login">
+        <!-- Header -->
+        <div class="login-header">
+            <span class="login-rune">✦</span>
+            <h1 class="login-title">WPManager</h1>
+            <span class="login-rune">✦</span>
+        </div>
+
+        <p class="login-subtitle">Enter ur personal archive~</p>
+
+        <!-- Login Form -->
+        <form class="spell-form" action="/login" method="POST">
+            <div class="form-group">
+                <label for="username" class="form-label">
+                    <span class="label-icon">👤</span>
+                    Name
+                </label>
+                <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="spell-input"
+                        placeholder="Enter your name..."
+                        required
+                >
+                <div class="input-underline"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">
+                    <span class="label-icon">🔮</span>
+                    Password
+                </label>
+                <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="spell-input"
+                        placeholder="Enter your password..."
+                        required
+                >
+                <div class="input-underline"></div>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-spell">
+                    <input type="checkbox" name="remember">
+                    <span class="checkbox-label">Remember me</span>
+                </label>
+                <a href="/forgot-password" class="forgot-link">Forgot spell?</a>
+            </div>
+
+            <button type="submit" class="cast-button">
+                <span class="button-text">Enter Grimoire</span>
+                <span class="button-glow"></span>
+            </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="spell-divider">
+            <span class="divider-line"></span>
+            <span class="divider-text">or</span>
+            <span class="divider-line"></span>
+        </div>
+
+        <!-- Register link -->
+        <div class="register-section">
+            <p class="register-text">New to the WPManager ?</p>
+            <a href="/register" class="register-link">
+                Create your account
+                <span class="link-arrow">→</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Floating decorative elements -->
+    <div class="floating-runes">
+        <span class="rune rune-1">✦</span>
+        <span class="rune rune-2">✧</span>
+        <span class="rune rune-3">✦</span>
+        <span class="rune rune-4">✧</span>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="login-footer">
+    <p class="footer-text">
+        <span class="footer-rune">✦</span>
+        Protected by ancient magic
+        <span class="footer-rune">✦</span>
+    </p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,539 @@
+/* ═══════════════════════════════════════════════════════════════
+   WALLPAPER GRIMOIRE - FRIEREN-INSPIRED THEME
+   A magical, mystical design for a mage's collection
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────── */
+/* ROOT VARIABLES - Your magical color palette */
+/* ─────────────────────────────────────────────────────────────── */
+:root {
+    /* Primary mystical colors */
+    --midnight-purple: #2d1b3d;
+    --deep-violet: #3d2952;
+    --mystic-blue: #4a5f7f;
+    --ethereal-lavender: #9d8fb8;
+    --moonlight: #d4c5e2;
+
+    /* Accent colors */
+    --spell-gold: #e8c170;
+    --magic-glow: #b8a9d4;
+    --frost-white: #f5f3f7;
+
+    /* Functional colors */
+    --shadow-deep: rgba(29, 17, 41, 0.6);
+    --shadow-soft: rgba(61, 41, 82, 0.3);
+    --glow-effect: rgba(184, 169, 212, 0.4);
+
+    /* Spacing scale */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2.5rem;
+    --space-xl: 4rem;
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* BASE STYLES */
+/* ─────────────────────────────────────────────────────────────── */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', 'Palatino', serif;
+    background: linear-gradient(135deg, var(--midnight-purple) 0%, var(--deep-violet) 50%, var(--mystic-blue) 100%);
+    color: var(--moonlight);
+    min-height: 100vh;
+    line-height: 1.6;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* MAGICAL BACKGROUND PARTICLES */
+/* ─────────────────────────────────────────────────────────────── */
+.magic-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+            radial-gradient(circle at 20% 30%, var(--glow-effect) 1px, transparent 1px),
+            radial-gradient(circle at 80% 70%, var(--glow-effect) 1px, transparent 1px),
+            radial-gradient(circle at 50% 50%, var(--glow-effect) 1px, transparent 1px),
+            radial-gradient(circle at 90% 20%, var(--glow-effect) 1px, transparent 1px),
+            radial-gradient(circle at 10% 80%, var(--glow-effect) 1px, transparent 1px);
+    background-size: 400px 400px, 350px 350px, 450px 450px, 500px 500px, 300px 300px;
+    animation: drift 20s ease-in-out infinite;
+}
+
+@keyframes drift {
+    0%, 100% { transform: translate(0, 0); opacity: 0.6; }
+    50% { transform: translate(30px, -30px); opacity: 0.8; }
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* HEADER - GRIMOIRE STYLE */
+/* ─────────────────────────────────────────────────────────────── */
+.grimoire-header {
+    position: relative;
+    z-index: 10;
+    padding: var(--space-lg) var(--space-md);
+    text-align: center;
+    background: rgba(45, 27, 61, 0.6);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--ethereal-lavender);
+    box-shadow: 0 4px 20px var(--shadow-deep);
+}
+
+.header-ornament {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--spell-gold), transparent);
+}
+
+.header-ornament.left { left: var(--space-md); }
+.header-ornament.right { right: var(--space-md); }
+
+.site-title {
+    font-size: 2.5rem;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: var(--moonlight);
+    margin-bottom: var(--space-md);
+    text-shadow: 0 0 20px var(--glow-effect);
+}
+
+.title-rune {
+    color: var(--spell-gold);
+    font-size: 1rem;
+    vertical-align: middle;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* NAVIGATION - SPELL TABS */
+/* ─────────────────────────────────────────────────────────────── */
+.spell-nav {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-lg);
+    margin-top: var(--space-md);
+}
+
+.nav-spell {
+    color: var(--ethereal-lavender);
+    text-decoration: none;
+    font-size: 1.1rem;
+    padding: var(--space-xs) var(--space-md);
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    letter-spacing: 0.05em;
+    position: relative;
+}
+
+.nav-spell::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    color: var(--spell-gold);
+}
+
+.nav-spell:hover,
+.nav-spell.active {
+    color: var(--spell-gold);
+    border-bottom-color: var(--spell-gold);
+}
+
+.nav-spell:hover::before,
+.nav-spell.active::before {
+    opacity: 1;
+    transform: translateX(-15px);
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* MAIN CONTENT CONTAINER */
+/* ─────────────────────────────────────────────────────────────── */
+.tome-content {
+    position: relative;
+    z-index: 5;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-md);
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* HERO SECTION - MAGICAL CIRCLE */
+/* ─────────────────────────────────────────────────────────────── */
+.hero-spell {
+    text-align: center;
+    padding: var(--space-xl) 0;
+    position: relative;
+}
+
+.spell-circle {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto var(--space-lg);
+}
+
+.circle-outer,
+.circle-middle,
+.circle-inner {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid var(--spell-gold);
+    opacity: 0.6;
+}
+
+.circle-outer {
+    width: 200px;
+    height: 200px;
+    top: 0;
+    left: 0;
+    animation: rotate-slow 20s linear infinite;
+    box-shadow: 0 0 20px var(--glow-effect);
+}
+
+.circle-middle {
+    width: 140px;
+    height: 140px;
+    top: 30px;
+    left: 30px;
+    animation: rotate-slow 15s linear infinite reverse;
+}
+
+.circle-inner {
+    width: 80px;
+    height: 80px;
+    top: 60px;
+    left: 60px;
+    animation: rotate-slow 10s linear infinite;
+    background: radial-gradient(circle, var(--glow-effect), transparent);
+}
+
+@keyframes rotate-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.hero-text {
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--frost-white);
+    margin-bottom: var(--space-sm);
+    letter-spacing: 0.1em;
+}
+
+.hero-subtext {
+    font-size: 1.2rem;
+    color: var(--ethereal-lavender);
+    font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* SPELL CARDS GRID */
+/* ─────────────────────────────────────────────────────────────── */
+.spell-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-lg);
+    margin: var(--space-xl) 0;
+}
+
+.spell-card {
+    background: rgba(61, 41, 82, 0.4);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--ethereal-lavender);
+    border-radius: 12px;
+    padding: var(--space-lg);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.spell-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, var(--glow-effect), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.spell-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--spell-gold);
+    box-shadow: 0 12px 40px var(--shadow-deep), 0 0 30px var(--glow-effect);
+}
+
+.spell-card:hover::before {
+    opacity: 0.1;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.card-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 8px var(--glow-effect));
+}
+
+.card-header h3 {
+    color: var(--frost-white);
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+}
+
+.card-body p {
+    color: var(--ethereal-lavender);
+    margin-bottom: var(--space-md);
+    line-height: 1.7;
+}
+
+.card-stats {
+    display: flex;
+    gap: var(--space-md);
+    font-size: 0.9rem;
+    color: var(--magic-glow);
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* SECTION TITLES */
+/* ─────────────────────────────────────────────────────────────── */
+.section-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--frost-white);
+    margin: var(--space-xl) 0 var(--space-lg);
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+}
+
+.title-line {
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--ethereal-lavender), transparent);
+    max-width: 200px;
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* FEATURED WALLPAPER SECTION */
+/* ─────────────────────────────────────────────────────────────── */
+.featured-tome {
+    margin: var(--space-xl) 0;
+}
+
+.featured-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    background: rgba(61, 41, 82, 0.3);
+    backdrop-filter: blur(10px);
+    border: 2px solid var(--ethereal-lavender);
+    border-radius: 12px;
+    padding: var(--space-lg);
+    align-items: center;
+}
+
+.featured-image {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--spell-gold);
+}
+
+.image-placeholder {
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, var(--deep-violet), var(--mystic-blue));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.image-placeholder::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, var(--glow-effect), transparent);
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.placeholder-text {
+    position: relative;
+    z-index: 1;
+    color: var(--spell-gold);
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+}
+
+.featured-info h3 {
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--frost-white);
+    margin-bottom: var(--space-sm);
+    letter-spacing: 0.05em;
+}
+
+.featured-meta {
+    color: var(--magic-glow);
+    font-size: 0.95rem;
+    margin-bottom: var(--space-md);
+}
+
+.mage-name {
+    color: var(--spell-gold);
+    font-weight: 600;
+}
+
+.featured-description {
+    color: var(--ethereal-lavender);
+    line-height: 1.8;
+    margin-bottom: var(--space-md);
+}
+
+.featured-tags {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.tag {
+    padding: var(--space-xs) var(--space-sm);
+    background: rgba(184, 169, 212, 0.2);
+    border: 1px solid var(--magic-glow);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--moonlight);
+    transition: all 0.3s ease;
+}
+
+.tag:hover {
+    background: rgba(184, 169, 212, 0.3);
+    border-color: var(--spell-gold);
+    color: var(--spell-gold);
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* FOOTER - GRIMOIRE CLOSING */
+/* ─────────────────────────────────────────────────────────────── */
+.grimoire-footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: var(--space-xl) var(--space-md);
+    background: rgba(45, 27, 61, 0.6);
+    backdrop-filter: blur(10px);
+    border-top: 2px solid var(--ethereal-lavender);
+    margin-top: var(--space-xl);
+}
+
+.footer-ornament {
+    width: 150px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--spell-gold), transparent);
+    margin: 0 auto var(--space-md);
+}
+
+.footer-text {
+    color: var(--moonlight);
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-sm);
+}
+
+.footer-rune {
+    color: var(--spell-gold);
+    font-size: 0.9rem;
+}
+
+.footer-small {
+    color: var(--magic-glow);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* RESPONSIVE DESIGN */
+/* ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .site-title {
+        font-size: 1.8rem;
+    }
+
+    .header-ornament {
+        display: none;
+    }
+
+    .spell-nav {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .nav-spell::before {
+        display: none;
+    }
+
+    .hero-text {
+        font-size: 1.5rem;
+    }
+
+    .spell-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .featured-card {
+        grid-template-columns: 1fr;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+    }
+
+    .title-line {
+        max-width: 80px;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* UTILITY CLASSES */
+/* ─────────────────────────────────────────────────────────────── */
+.text-center { text-align: center; }
+.text-glow { text-shadow: 0 0 20px var(--glow-effect); }
+.mt-lg { margin-top: var(--space-lg); }
+.mb-lg { margin-bottom: var(--space-lg); }
