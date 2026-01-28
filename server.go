@@ -19,18 +19,26 @@ func main() {
 		// From: mysql://user:pass@host:port/db
 		// To: user:pass@tcp(host:port)/db
 
-		dbURL = strings.Replace(dbURL, "mysql://", "", 1)
+		dbURL = strings.TrimPrefix(dbURL, "mysql://")
 
-		// Split into credentials and host/db parts
-		parts := strings.Split(dbURL, "@")
-		if len(parts) == 2 {
-			credentials := parts[0]
-			hostAndDb := parts[1]
+		// Find the @ that separates credentials from host
+		atIndex := strings.Index(dbURL, "@")
+		if atIndex != -1 {
+			credentials := dbURL[:atIndex]
+			hostAndDb := dbURL[atIndex+1:]
 
-			// Rebuild in the correct format
-			dbURL = credentials + "@tcp(" + hostAndDb + ")"
+			// Find the / that separates host:port from database
+			slashIndex := strings.Index(hostAndDb, "/")
+			if slashIndex != -1 {
+				hostPort := hostAndDb[:slashIndex]
+				database := hostAndDb[slashIndex+1:]
+
+				// Rebuild in correct format
+				dbURL = fmt.Sprintf("%s@tcp(%s)/%s", credentials, hostPort, database)
+			}
 		}
 
+		log.Printf("Connecting to database...")
 		db, err := sql.Open("mysql", dbURL)
 		if err != nil {
 			log.Fatal(err)
