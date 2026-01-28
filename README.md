@@ -51,6 +51,7 @@ Each user can manage their own wallpapers and interact with others through socia
 - [ ] Notifications
 - [ ] User profiles
 - [ ] Badges
+- [ ] Rename WAllpapers
 
 ## Goal
 Build a customizable wallpaper management and sharing platform with an exhibition-style layout and community features.
