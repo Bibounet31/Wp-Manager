@@ -1,1 +1,1 @@
-web: ./wp-manager
+web: ./bin/wp-manager
