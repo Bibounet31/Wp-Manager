@@ -3,13 +3,14 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"html/template"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func parseScalingoDSN(dbURL string) string {
@@ -52,6 +53,9 @@ func main() {
 	// Routes
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		render(w, "index.html", nil)
+	})
+	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		render(w, "login.html", nil)
 	})
 
 	// Start server
