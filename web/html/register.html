@@ -6,6 +6,8 @@
     <title>Enter the Grimoire - Login</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/login.css">
+    <link rel="stylesheet" href="../css/register.css">
+
 </head>
 <body>
 <header class="grimoire-header">
@@ -46,9 +48,9 @@
 
         <p class="login-subtitle">Enter ur personal archive~</p>
 
-        <!-- Login Form -->
-        <form class="spell-form" action="/login" method="POST">
-            <div class="form-group">
+        <!-- Register Form -->
+        <form class="spell-form" action="/register" method="POST">
+        <div class="form-group">
                 <label for="username" class="form-label">
                     <span class="label-icon">👤</span>
                     Name
@@ -58,17 +60,55 @@
                         id="username"
                         name="username"
                         class="spell-input"
-                        placeholder="Enter your name..."
+                        placeholder="Enter your username..."
                         required
                 >
                 <div class="input-underline"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                class="spell-input"
+                                placeholder="Enter your name... (optional)"
+                        >
+                        <div class="input-underline"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <input
+                                type="text"
+                                id="surname"
+                                name="surname"
+                                class="spell-input"
+                                placeholder="Enter your surname... (optional)"
+                        >
+                        <div class="input-underline"></div>
+                    </div>
+                </div>
+
+
+                <input
+                        type="text"
+                        id="mail"
+                        name="mail"
+                        class="spell-input"
+                        placeholder="Enter your email"
+                        required
+                >
+                <div class="input-underline"></div>
+
+
             </div>
 
-            <div class="form-group">
+            <div class="form-group password-group">
                 <label for="password" class="form-label">
                     <span class="label-icon">🔮</span>
                     Password
                 </label>
+
                 <input
                         type="password"
                         id="password"
@@ -78,7 +118,18 @@
                         required
                 >
                 <div class="input-underline"></div>
+
+                <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        class="spell-input confirm-password"
+                        placeholder="Retype your password..."
+                        required
+                >
+                <div class="input-underline"></div>
             </div>
+
 
             <div class="form-options">
                 <label class="remember-spell">
@@ -103,9 +154,9 @@
 
         <!-- Register link -->
         <div class="register-section">
-            <p class="register-text">New to the WPManager ?</p>
-            <a href="/register" class="register-link">
-                Create your account
+            <p class="register-text">Already have an account ?</p>
+            <a href="/login" class="register-link">
+                Log in
                 <span class="link-arrow">→</span>
             </a>
         </div>

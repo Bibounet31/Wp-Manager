@@ -9,78 +9,118 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func parseScalingoDSN(dbURL string) string {
-	// Convert mysql://user:pass@host:port/db to user:pass@tcp(host:port)/db
-	dbURL = strings.TrimPrefix(dbURL, "mysql://")
-	dbURL = strings.Split(dbURL, "?")[0] // Remove query params
-
-	parts := strings.SplitN(dbURL, "@", 2)
-	if len(parts) != 2 {
-		return dbURL
-	}
-
-	credentials := parts[0]
-	hostAndDb := parts[1]
-
-	hostParts := strings.SplitN(hostAndDb, "/", 2)
-	if len(hostParts) != 2 {
-		return dbURL
-	}
-
-	return fmt.Sprintf("%s@tcp(%s)/%s?tls=skip-verify", credentials, hostParts[0], hostParts[1])
-}
+var db *sql.DB
+var templates *template.Template
 
 func main() {
-	// Database connection
-	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
-		db, err := sql.Open("mysql", parseScalingoDSN(dbURL))
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer db.Close()
+	var err error
+	var dsn string
 
-		if err := db.Ping(); err != nil {
-			log.Fatal(err)
-		}
-
-		log.Println("✅ Connected to database!")
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		log.Println("⚠️  Using local database")
+		dsn = "wpmanager:secret123@tcp(127.0.0.1:3306)/wallpaper_manager?parseTime=true"
+	} else {
+		dsn = parseScalingoDSN(dbURL)
 	}
 
-	// Routes
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		render(w, "index.html", nil)
-	})
-	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		render(w, "login.html", nil)
-	})
+	log.Println("🔍 Using DSN:", dsn)
 
-	//static files
+	db, err = sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Connection pool
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(5 * time.Minute)
+
+	if err := db.Ping(); err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("✅ Connected to database!")
+
+	if err := initDatabase(); err != nil {
+		log.Fatal(err)
+	}
+
+	// Parse templates
+	templates = template.Must(
+		template.New("").
+			Funcs(template.FuncMap{
+				"add":        func(a, b int) int { return a + b },
+				"pathEscape": url.PathEscape,
+			}).
+			ParseGlob("web/html/*.html"),
+	)
+
+	// Register routes
+	registerRoutes()
+
+	// Static files
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("web/css"))))
 
-	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	log.Printf("Server starting on port %s", port)
+	log.Printf("🚀 Server running on http://localhost:%s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
-func render(w http.ResponseWriter, file string, data any) {
-	funcMap := template.FuncMap{
-		"add":        func(a, b int) int { return a + b },
-		"pathEscape": url.PathEscape,
+// Convert Scalingo DSN
+func parseScalingoDSN(dbURL string) string {
+	dbURL = strings.TrimPrefix(dbURL, "mysql://")
+	dbURL = strings.Split(dbURL, "?")[0]
+
+	parts := strings.SplitN(dbURL, "@", 2)
+	credentials := parts[0]
+	hostAndDb := parts[1]
+
+	hostParts := strings.SplitN(hostAndDb, "/", 2)
+	host := hostParts[0]
+	dbName := hostParts[1]
+
+	return fmt.Sprintf("%s@tcp(%s)/%s?parseTime=true", credentials, host, dbName)
+}
+
+// Initialize database tables
+func initDatabase() error {
+	_, err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS users (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			username VARCHAR(50) UNIQUE NOT NULL,
+			email VARCHAR(100) UNIQUE NOT NULL,
+			name VARCHAR(50),
+			surname VARCHAR(50),
+			password_hash VARCHAR(255) NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("users table: %w", err)
 	}
 
-	t, err := template.New(file).Funcs(funcMap).ParseFiles("web/html/" + file)
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS sessions (
+			id VARCHAR(36) PRIMARY KEY,
+			user_id INT NOT NULL,
+			expires_at TIMESTAMP NOT NULL,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+		)
+	`)
 	if err != nil {
-		http.Error(w, "Template not found", 500)
-		return
+		return fmt.Errorf("sessions table: %w", err)
 	}
-	t.Execute(w, data)
+
+	log.Println("✅ Database tables initialized!")
+	return nil
 }
