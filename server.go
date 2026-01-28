@@ -3,12 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 func parseScalingoDSN(dbURL string) string {
@@ -50,7 +51,7 @@ func main() {
 
 	// Routes
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Wallpaper Manager is running!")
+		render(w, "index.html", nil)
 	})
 
 	// Start server
@@ -61,4 +62,18 @@ func main() {
 
 	log.Printf("Server starting on port %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
+}
+
+func render(w http.ResponseWriter, file string, data any) {
+	funcMap := template.FuncMap{
+		"add":        func(a, b int) int { return a + b },
+		"pathEscape": url.PathEscape,
+	}
+
+	t, err := template.New(file).Funcs(funcMap).ParseFiles("web/html/" + file)
+	if err != nil {
+		http.Error(w, "Template not found", 500)
+		return
+	}
+	t.Execute(w, data)
 }
