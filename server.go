@@ -11,47 +11,37 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+func parseScalingoDSN(dbURL string) string {
+	// Convert mysql://user:pass@host:port/db to user:pass@tcp(host:port)/db
+	dbURL = strings.TrimPrefix(dbURL, "mysql://")
+	dbURL = strings.Split(dbURL, "?")[0] // Remove query params
+
+	parts := strings.SplitN(dbURL, "@", 2)
+	if len(parts) != 2 {
+		return dbURL
+	}
+
+	credentials := parts[0]
+	hostAndDb := parts[1]
+
+	hostParts := strings.SplitN(hostAndDb, "/", 2)
+	if len(hostParts) != 2 {
+		return dbURL
+	}
+
+	return fmt.Sprintf("%s@tcp(%s)/%s?tls=skip-verify", credentials, hostParts[0], hostParts[1])
+}
+
 func main() {
 	// Database connection
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL != "" {
-		// Parse Scalingo's DATABASE_URL format
-		// From: mysql://user:pass@host:port/db?params
-		// To: user:pass@tcp(host:port)/db
-
-		dbURL = strings.TrimPrefix(dbURL, "mysql://")
-
-		// Remove query parameters (they cause issues with Go driver)
-		if idx := strings.Index(dbURL, "?"); idx != -1 {
-			dbURL = dbURL[:idx]
-		}
-
-		// Find the @ that separates credentials from host
-		atIndex := strings.Index(dbURL, "@")
-		if atIndex != -1 {
-			credentials := dbURL[:atIndex]
-			hostAndDb := dbURL[atIndex+1:]
-
-			// Find the / that separates host:port from database
-			slashIndex := strings.Index(hostAndDb, "/")
-			if slashIndex != -1 {
-				hostPort := hostAndDb[:slashIndex]
-				database := hostAndDb[slashIndex+1:]
-
-				// Rebuild in correct format with proper SSL handling
-				dbURL = fmt.Sprintf("%s@tcp(%s)/%s?tls=skip-verify", credentials, hostPort, database)
-			}
-		}
-
-		log.Printf("Connecting to database...")
-		db, err := sql.Open("mysql", dbURL)
+	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
+		db, err := sql.Open("mysql", parseScalingoDSN(dbURL))
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer db.Close()
 
-		err = db.Ping()
-		if err != nil {
+		if err := db.Ping(); err != nil {
 			log.Fatal(err)
 		}
 
@@ -63,7 +53,7 @@ func main() {
 		fmt.Fprintf(w, "Wallpaper Manager is running!")
 	})
 
-	// Get port from Scalingo
+	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
