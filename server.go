@@ -16,16 +16,27 @@ func main() {
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL != "" {
 		// Parse Scalingo's DATABASE_URL format
-		// From: mysql://user:pass@host:port/db
-		// To: user:pass@tcp(host:port)/db
+		// From: mysql://user:pass@host:port/db?params
+		// To: user:pass@tcp(host:port)/db?params (with corrected params)
 
 		dbURL = strings.TrimPrefix(dbURL, "mysql://")
 
+		// Split off query parameters if they exist
+		mainPart := dbURL
+		queryParams := ""
+		if idx := strings.Index(dbURL, "?"); idx != -1 {
+			mainPart = dbURL[:idx]
+			queryParams = dbURL[idx+1:]
+
+			// Fix common parameter issues
+			queryParams = strings.ReplaceAll(queryParams, "useSSL", "tls")
+		}
+
 		// Find the @ that separates credentials from host
-		atIndex := strings.Index(dbURL, "@")
+		atIndex := strings.Index(mainPart, "@")
 		if atIndex != -1 {
-			credentials := dbURL[:atIndex]
-			hostAndDb := dbURL[atIndex+1:]
+			credentials := mainPart[:atIndex]
+			hostAndDb := mainPart[atIndex+1:]
 
 			// Find the / that separates host:port from database
 			slashIndex := strings.Index(hostAndDb, "/")
@@ -35,6 +46,11 @@ func main() {
 
 				// Rebuild in correct format
 				dbURL = fmt.Sprintf("%s@tcp(%s)/%s", credentials, hostPort, database)
+
+				// Add query params if they exist
+				if queryParams != "" {
+					dbURL = dbURL + "?" + queryParams
+				}
 			}
 		}
 
