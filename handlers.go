@@ -38,9 +38,15 @@ type WallpapersPageData struct {
 	IsAdmin    bool
 }
 
+// ✅ NEW: Common page data structure
+type PageData struct {
+	Username string
+	IsAdmin  bool
+}
+
 // Register all HTTP routes
 func registerRoutes() {
-	http.HandleFunc("/", page("index.html"))
+	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/community", communityHandler)
 	http.HandleFunc("/wallpapers", wallpapersHandler)
 	http.HandleFunc("/register", registerHandler)
@@ -54,17 +60,42 @@ func registerRoutes() {
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }
 
-// page renders GET-only pages
-func page(file string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-		if err := templates.ExecuteTemplate(w, file, nil); err != nil {
-			log.Println("Template error:", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-		}
+// ✅ NEW: Helper function to get page data with user info
+func getPageData(r *http.Request) PageData {
+	data := PageData{}
+	user := getCurrentUser(r)
+	if user != nil {
+		data.Username = user.Username
+		data.IsAdmin = user.IsAdmin
+	}
+	return data
+}
+
+// ✅ UPDATED: Index handler
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	data := getPageData(r)
+	if err := templates.ExecuteTemplate(w, "index.html", data); err != nil {
+		log.Println("Template error:", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+	}
+}
+
+// ✅ UPDATED: Community handler
+func communityHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	data := getPageData(r)
+	if err := templates.ExecuteTemplate(w, "community.html", data); err != nil {
+		log.Println("Template error:", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 	}
 }
 
@@ -123,7 +154,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handles user login
-// Handles user login
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		r.ParseForm()
@@ -161,7 +191,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			Expires:  expiresAt,
 			Path:     "/",
 			HttpOnly: true,
-			SameSite: http.SameSiteStrictMode, // ✅ Added CSRF protection
+			SameSite: http.SameSiteStrictMode,
 		})
 
 		// Log the login and admin status
@@ -255,35 +285,8 @@ func printAllUsers() {
 	}
 }
 
-func communityHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Get current user (returns nil if not logged in)
-	user := getCurrentUser(r)
-
-	// Prepare data for template
-	data := struct {
-		Username string
-		IsAdmin  bool
-	}{}
-
-	if user != nil {
-		data.Username = user.Username
-		data.IsAdmin = user.IsAdmin
-	}
-
-	if err := templates.ExecuteTemplate(w, "community.html", data); err != nil {
-		log.Println("Template error:", err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-	}
-}
-
 // profileHandler shows user info if logged in
 func profileHandler(w http.ResponseWriter, r *http.Request) {
-
 	// ✅ Use getCurrentUser which checks expiry
 	user := getCurrentUser(r)
 	if user == nil {
