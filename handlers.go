@@ -41,7 +41,7 @@ type WallpapersPageData struct {
 // Register all HTTP routes
 func registerRoutes() {
 	http.HandleFunc("/", page("index.html"))
-	http.HandleFunc("/community", page("community.html"))
+	http.HandleFunc("/community", communityHandler)
 	http.HandleFunc("/wallpapers", wallpapersHandler)
 	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/login", loginHandler)
@@ -252,6 +252,32 @@ func printAllUsers() {
 		}
 		fmt.Printf("ID: %d | Username: %s | Email: %s | Name: %s %s | Created: %s\n",
 			id, username, email, name, surname, createdAt.Format("2006-01-02 15:04:05"))
+	}
+}
+
+func communityHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Get current user (returns nil if not logged in)
+	user := getCurrentUser(r)
+
+	// Prepare data for template
+	data := struct {
+		Username string
+		IsAdmin  bool
+	}{}
+
+	if user != nil {
+		data.Username = user.Username
+		data.IsAdmin = user.IsAdmin
+	}
+
+	if err := templates.ExecuteTemplate(w, "community.html", data); err != nil {
+		log.Println("Template error:", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 	}
 }
 
