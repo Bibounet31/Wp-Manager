@@ -43,6 +43,7 @@ func registerRoutes() {
 	http.HandleFunc("/profile", profileHandler)
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/upload", uploadHandler)
+	http.HandleFunc("/rename", renameHandler)
 
 	// Serve uploaded files
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
@@ -143,6 +144,64 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// GET → show login form
 	templates.ExecuteTemplate(w, "login.html", nil)
+}
+
+func renameHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Get form values
+	wallpaperID := r.FormValue("wallpaper_id")
+	newName := r.FormValue("new_name")
+
+	// Validate input
+	if wallpaperID == "" || newName == "" {
+		http.Error(w, "Missing wallpaper ID or new name", http.StatusBadRequest)
+		return
+	}
+
+	// Check if user is logged in
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	// Get user ID from session
+	var userID int
+	err = db.QueryRow("SELECT user_id FROM sessions WHERE id = ?", cookie.Value).Scan(&userID)
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	// Verify that this wallpaper belongs to the user (IMPORTANT for security!)
+	var ownerID int
+	err = db.QueryRow("SELECT user_id FROM wallpapers WHERE id = ?", wallpaperID).Scan(&ownerID)
+	if err != nil {
+		http.Error(w, "Wallpaper not found", http.StatusNotFound)
+		return
+	}
+
+	if ownerID != userID {
+		http.Error(w, "Unauthorized", http.StatusForbidden)
+		return
+	}
+
+	// Update the wallpaper name
+	_, err = db.Exec("UPDATE wallpapers SET original_name = ? WHERE id = ?", newName, wallpaperID)
+	if err != nil {
+		log.Println("Failed to rename wallpaper:", err)
+		http.Error(w, "Failed to rename wallpaper", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("✅ Wallpaper %s renamed to: %s by user %d", wallpaperID, newName, userID)
+
+	// Redirect back to wallpapers page
+	http.Redirect(w, r, "/wallpapers", http.StatusSeeOther)
 }
 
 // Print all users in console
