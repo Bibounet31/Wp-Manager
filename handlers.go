@@ -18,6 +18,7 @@ type UserProfile struct {
 	Email    string
 	Name     string
 	Surname  string
+	IsAdmin  bool
 }
 
 type Wallpaper struct {
@@ -28,6 +29,8 @@ type Wallpaper struct {
 	FilePath     string
 	UploadedAt   time.Time
 }
+
+var isadmin bool = false
 
 type WallpapersPageData struct {
 	Wallpapers []Wallpaper
@@ -77,6 +80,20 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		surname := r.FormValue("surname")
 		password := r.FormValue("password")
 
+		// Input validation
+		if len(username) < 3 || len(username) > 50 {
+			http.Error(w, "Username must be 3-50 characters", http.StatusBadRequest)
+			return
+		}
+		if len(password) < 8 {
+			http.Error(w, "Password must be at least 8 characters", http.StatusBadRequest)
+			return
+		}
+		if len(email) > 100 {
+			http.Error(w, "Email too long", http.StatusBadRequest)
+			return
+		}
+
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			http.Error(w, "Failed to hash password", http.StatusInternalServerError)
@@ -104,6 +121,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handles user login
+// Handles user login
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		r.ParseForm()
@@ -112,13 +130,17 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		var userID int
 		var hashedPassword string
+		var isAdmin bool
 
-		err := db.QueryRow("SELECT id, password_hash FROM users WHERE username = ?", username).Scan(&userID, &hashedPassword)
+		// Fetch user data including isadmin from DB
+		err := db.QueryRow("SELECT id, password_hash, isadmin FROM users WHERE username = ?", username).
+			Scan(&userID, &hashedPassword, &isAdmin)
 		if err != nil {
 			http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 			return
 		}
 
+		// Verify password
 		if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
 			http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 			return
@@ -130,14 +152,20 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, _ = db.Exec("INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)", sessionID, userID, expiresAt)
 
+		// Set session cookie
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_id",
 			Value:    sessionID,
 			Expires:  expiresAt,
 			Path:     "/",
 			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode, // ✅ Added CSRF protection
 		})
 
+		// Log the login and admin status
+		log.Printf("username: %s successfully logged in, isadmin: %t", username, isAdmin)
+
+		// Redirect to profile
 		http.Redirect(w, r, "/profile", http.StatusSeeOther)
 		return
 	}
@@ -156,23 +184,20 @@ func renameHandler(w http.ResponseWriter, r *http.Request) {
 	wallpaperID := r.FormValue("wallpaper_id")
 	newName := r.FormValue("new_name")
 
-	// Validate input
+	// ✅ Enhanced validation
 	if wallpaperID == "" || newName == "" {
 		http.Error(w, "Missing wallpaper ID or new name", http.StatusBadRequest)
 		return
 	}
-
-	// Check if user is logged in
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	if len(newName) > 255 {
+		http.Error(w, "Name too long (max 255 characters)", http.StatusBadRequest)
 		return
 	}
 
-	// Get user ID from session
-	var userID int
-	err = db.QueryRow("SELECT user_id FROM sessions WHERE id = ?", cookie.Value).Scan(&userID)
+	// ✅ Use getUserIDFromSession helper with expiry check
+	userID, err := getUserIDFromSession(r)
 	if err != nil {
+		log.Println("Session error:", err)
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -186,6 +211,7 @@ func renameHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if ownerID != userID {
+		log.Printf("⚠️ Unauthorized rename attempt: user %d tried to rename wallpaper owned by %d", userID, ownerID)
 		http.Error(w, "Unauthorized", http.StatusForbidden)
 		return
 	}
@@ -229,48 +255,14 @@ func printAllUsers() {
 
 // profileHandler shows user info if logged in
 func profileHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("📍 Profile handler called")
 
-	// Check if session cookie exists
-	cookie, err := r.Cookie("session_id")
-	if err != nil {
-		log.Println("❌ No session cookie found")
+	// ✅ Use getCurrentUser which checks expiry
+	user := getCurrentUser(r)
+	if user == nil {
+		log.Println("❌ No valid session")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
-
-	sessionID := cookie.Value
-	log.Println("🔑 Session ID:", sessionID)
-
-	// Get user ID from session
-	var userID int
-	var expiresAt time.Time
-	err = db.QueryRow("SELECT user_id, expires_at FROM sessions WHERE id = ?", sessionID).
-		Scan(&userID, &expiresAt)
-	if err != nil {
-		log.Println("❌ Session not found in DB:", err)
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-
-	// Check if session expired
-	if time.Now().After(expiresAt) {
-		log.Println("⏰ Session expired")
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-
-	// Get user info
-	var user UserProfile
-	err = db.QueryRow("SELECT username, email, name, surname FROM users WHERE id = ?", userID).
-		Scan(&user.Username, &user.Email, &user.Name, &user.Surname)
-	if err != nil {
-		log.Println("❌ Failed to get user info:", err)
-		http.Error(w, "Failed to get user info", http.StatusInternalServerError)
-		return
-	}
-
-	log.Printf("✅ Loaded user: %s (%s)", user.Username, user.Email)
 
 	// Render profile page with struct
 	if err := templates.ExecuteTemplate(w, "profile.html", user); err != nil {
@@ -289,24 +281,41 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
-// getCurrentUser returns the logged-in user or nil if not logged in
-func getCurrentUser(r *http.Request) *UserProfile {
+// ✅ NEW: Helper function to get user ID from session WITH expiry check
+func getUserIDFromSession(r *http.Request) (int, error) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
-		return nil
+		return 0, fmt.Errorf("no session cookie")
 	}
 
 	var userID int
 	var expiresAt time.Time
 	err = db.QueryRow("SELECT user_id, expires_at FROM sessions WHERE id = ?", cookie.Value).
 		Scan(&userID, &expiresAt)
-	if err != nil || time.Now().After(expiresAt) {
+	if err != nil {
+		return 0, fmt.Errorf("session not found: %w", err)
+	}
+
+	// ✅ Check if session expired
+	if time.Now().After(expiresAt) {
+		// Clean up expired session
+		db.Exec("DELETE FROM sessions WHERE id = ?", cookie.Value)
+		return 0, fmt.Errorf("session expired")
+	}
+
+	return userID, nil
+}
+
+// getCurrentUser returns the logged-in user or nil if not logged in
+func getCurrentUser(r *http.Request) *UserProfile {
+	userID, err := getUserIDFromSession(r)
+	if err != nil {
 		return nil
 	}
 
 	var user UserProfile
-	err = db.QueryRow("SELECT username, email, name, surname FROM users WHERE id = ?", userID).
-		Scan(&user.Username, &user.Email, &user.Name, &user.Surname)
+	err = db.QueryRow("SELECT username, email, name, surname, isadmin FROM users WHERE id = ?", userID).
+		Scan(&user.Username, &user.Email, &user.Name, &user.Surname, &user.IsAdmin)
 	if err != nil {
 		return nil
 	}
@@ -316,17 +325,19 @@ func getCurrentUser(r *http.Request) *UserProfile {
 
 // wallpapersHandler displays user's wallpapers
 func wallpapersHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if user is logged in
+	// ✅ Use getCurrentUser which now checks expiry
 	user := getCurrentUser(r)
 	if user == nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
-	// Get user ID from session
-	cookie, _ := r.Cookie("session_id")
-	var userID int
-	db.QueryRow("SELECT user_id FROM sessions WHERE id = ?", cookie.Value).Scan(&userID)
+	// ✅ Use helper to get userID with expiry check
+	userID, err := getUserIDFromSession(r)
+	if err != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
 
 	// Get user's wallpapers
 	rows, err := db.Query(`
@@ -366,17 +377,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if user is logged in
-	cookie, err := r.Cookie("session_id")
+	// ✅ Use helper with expiry check
+	userID, err := getUserIDFromSession(r)
 	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-
-	// Get user ID
-	var userID int
-	err = db.QueryRow("SELECT user_id FROM sessions WHERE id = ?", cookie.Value).Scan(&userID)
-	if err != nil {
+		log.Println("Upload: Session error:", err)
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
@@ -395,11 +399,24 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
+	// ✅ Validate file extension
+	ext := filepath.Ext(header.Filename)
+	allowedExts := map[string]bool{".jpg": true, ".jpeg": true, ".png": true, ".gif": true, ".webp": true}
+	if !allowedExts[ext] {
+		http.Error(w, "Invalid file type. Only images allowed", http.StatusBadRequest)
+		return
+	}
+
+	// ✅ Validate filename length
+	if len(header.Filename) > 255 {
+		http.Error(w, "Filename too long", http.StatusBadRequest)
+		return
+	}
+
 	// Create uploads directory if it doesn't exist
 	os.MkdirAll("web/uploads", 0755)
 
 	// Generate unique filename
-	ext := filepath.Ext(header.Filename)
 	filename := fmt.Sprintf("%d_%s%s", userID, uuid.New().String(), ext)
 	filePath := filepath.Join("web/uploads", filename)
 

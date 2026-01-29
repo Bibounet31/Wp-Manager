@@ -103,7 +103,8 @@ func initDatabase() error {
 			name VARCHAR(50),
 			surname VARCHAR(50),
 			password_hash VARCHAR(255) NOT NULL,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		    isadmin bool NOT NULL DEFAULT false
 		)
 	`)
 	if err != nil {

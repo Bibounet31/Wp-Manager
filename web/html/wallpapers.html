@@ -44,7 +44,7 @@
         <form action="/upload" method="POST" enctype="multipart/form-data" class="upload-form">
             <div class="upload-card">
                 <label for="wallpaper" class="upload-label">
-                    <span class="upload-icon">📁</span>
+                    <span class="upload-icon">🖼</span>
                     <span class="upload-text">Choose your wallpaper</span>
                     <input type="file" id="wallpaper" name="wallpaper" accept="image/*" required>
                 </label>
@@ -68,21 +68,28 @@
         <div class="spell-grid">
             {{range .Wallpapers}}
             <div class="wallpaper-card" data-wallpaper-id="{{.ID}}">
-                <div class="wallpaper-image">
-                    <img src="/uploads/{{.Filename}}" alt="{{.OriginalName}}">
-                </div>
-                <div class="wallpaper-info">
-                    <h3>{{.OriginalName}}</h3>
-                    <p class="upload-date">{{.UploadedAt.Format "Jan 2, 2006 at 3:04 PM"}}</p>
-                    <a href="/uploads/{{.Filename}}" download="{{.OriginalName}}" class="download-button">
-                        ⬇️ Download
-                    </a>
-                    <button class="rename-button" data-wallpaper-id="{{.ID}}">
-                        ✏️ Rename
-                    </button>
-                    <a href="#" class="favorite-button" data-wallpaper-id="{{.ID}}">
-                        ❤️ Add to favorite
-                    </a>
+                <div class="wallpaper-image-container">
+                    <img src="/uploads/{{.Filename}}" alt="{{.OriginalName}}" class="wallpaper-image">
+                    <div class="wallpaper-overlay">
+                        <div class="wallpaper-info">
+                            <h3>{{.OriginalName}}</h3>
+                            <p class="upload-date">{{.UploadedAt.Format "Jan 2, 2006 at 3:04 PM"}}</p>
+                        </div>
+                        <div class="wallpaper-actions">
+                            <a href="/uploads/{{.Filename}}" download="{{.OriginalName}}" class="action-button download-button">
+                                <span class="button-icon">⬇️</span>
+                                <span class="button-label">Download</span>
+                            </a>
+                            <button class="action-button rename-button" data-wallpaper-id="{{.ID}}">
+                                <span class="button-icon">✏️</span>
+                                <span class="button-label">Rename</span>
+                            </button>
+                            <a href="#" class="action-button favorite-button" data-wallpaper-id="{{.ID}}">
+                                <span class="button-icon">❤️</span>
+                                <span class="button-label">Favorite</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
             {{end}}
@@ -107,5 +114,6 @@
 </footer>
 
 <script src="/scripts/rename.js"></script>
+<script src="/scripts/wallpaper-compact.js"></script>
 </body>
 </html>

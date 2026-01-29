@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    WALLPAPER PAGE - UPLOAD & GALLERY STYLES
-   Centers magical upload circle, matches style.css sizes
+   Enhanced with hover overlay for better image visibility
    ═══════════════════════════════════════════════════════════════ */
 
 /* ─────────────────────────────────────────────────────────────── */
@@ -8,9 +8,9 @@
 /* ─────────────────────────────────────────────────────────────── */
 .spell-circle-small {
     position: relative;
-    width: 200px; /* same as style.css */
-    height: 200px; /* same as style.css */
-    margin: 0 auto var(--space-lg); /* center horizontally */
+    width: 200px;
+    height: 200px;
+    margin: 0 auto var(--space-lg);
 }
 
 .spell-circle-small .circle-outer,
@@ -99,6 +99,7 @@
 
 /* ─────────────────────────────────────────────────────────────── */
 /* UPLOAD BUTTON */
+/* ─────────────────────────────────────────────────────────────── */
 .upload-button {
     position: relative;
     padding: 0.8rem 1.5rem;
@@ -143,7 +144,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────── */
-/* WALLPAPER GALLERY STYLING */
+/* WALLPAPER GALLERY - NEW HOVER OVERLAY DESIGN */
 /* ─────────────────────────────────────────────────────────────── */
 .wallpaper-gallery {
     margin-top: var(--space-xl);
@@ -151,7 +152,7 @@
 
 .spell-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: var(--space-lg);
 }
 
@@ -162,66 +163,200 @@
     border-radius: 12px;
     overflow: hidden;
     transition: all 0.4s ease;
-    display: flex;
-    flex-direction: column;
+    position: relative;
 }
 
 .wallpaper-card:hover {
     border-color: var(--spell-gold);
     box-shadow: 0 12px 40px var(--shadow-deep), 0 0 30px var(--glow-effect);
+    transform: translateY(-4px);
 }
 
-.wallpaper-image img {
+/* ─────────────────────────────────────────────────────────────── */
+/* IMAGE CONTAINER WITH OVERLAY */
+/* ─────────────────────────────────────────────────────────────── */
+.wallpaper-image-container {
+    position: relative;
     width: 100%;
-    display: block;
-    border-bottom: 2px solid var(--ethereal-lavender);
+    overflow: hidden;
 }
 
-.wallpaper-info {
-    padding: var(--space-md);
+.wallpaper-image {
+    width: 100%;
+    height: auto;
+    min-height: 250px;
+    max-height: 500px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.wallpaper-card:hover .wallpaper-image {
+    transform: scale(1.05);
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* OVERLAY WITH INFO AND ACTIONS */
+/* ─────────────────────────────────────────────────────────────── */
+.wallpaper-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+            to bottom,
+            rgba(45, 27, 61, 0.2) 0%,
+            rgba(45, 27, 61, 0.6) 40%,
+            rgba(45, 27, 61, 0.95) 85%
+    );
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    justify-content: space-between;
+    padding: var(--space-md);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.wallpaper-card:hover .wallpaper-overlay {
+    opacity: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* WALLPAPER INFO IN OVERLAY */
+/* ─────────────────────────────────────────────────────────────── */
+.wallpaper-info {
+    text-align: center;
+    transform: translateY(-20px);
+    transition: transform 0.4s ease 0.1s;
+}
+
+.wallpaper-card:hover .wallpaper-info {
+    transform: translateY(0);
 }
 
 .wallpaper-info h3 {
     color: var(--frost-white);
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     margin-bottom: var(--space-xs);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    word-wrap: break-word;
 }
 
 .upload-date {
-    font-size: 0.9rem;
-    color: var(--magic-glow);
+    font-size: 0.85rem;
+    color: var(--ethereal-lavender);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 }
 
-.download-button,
-.rename-button,
-.favorite-button {
-    display: inline-block;
-    margin-top: var(--space-xs);
-    padding: 0.5rem 1rem;
+/* ─────────────────────────────────────────────────────────────── */
+/* ACTION BUTTONS IN OVERLAY */
+/* ─────────────────────────────────────────────────────────────── */
+.wallpaper-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    transform: translateY(20px);
+    transition: transform 0.4s ease 0.15s;
+}
+
+.wallpaper-card:hover .wallpaper-actions {
+    transform: translateY(0);
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--frost-white);
-    background: rgba(61, 41, 82, 0.5);
+    background: rgba(61, 41, 82, 0.9);
+    backdrop-filter: blur(10px);
     border: 1px solid var(--ethereal-lavender);
     text-decoration: none;
     transition: all 0.3s ease;
     cursor: pointer;
-    text-align: center;
+    font-family: 'Georgia', serif;
+    flex: 1;
+    min-width: fit-content;
 }
 
-.download-button:hover,
-.rename-button:hover,
-.favorite-button:hover {
-    background: rgba(184, 169, 212, 0.2);
+.action-button .button-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.action-button .button-label {
+    display: inline;
+    white-space: nowrap;
+}
+
+/* Compact mode for short images */
+@media (max-height: 350px) {
+    .wallpaper-card .action-button .button-label {
+        display: none;
+    }
+
+    .wallpaper-card .action-button {
+        padding: 0.5rem;
+        min-width: 42px;
+    }
+}
+
+/* Hide labels on smaller containers using container queries fallback */
+.wallpaper-card:has(.wallpaper-image[style*="height"]) .action-button .button-label {
+    /* Will be overridden by media query if needed */
+}
+
+.action-button:hover {
+    background: rgba(184, 169, 212, 0.3);
     border-color: var(--spell-gold);
     color: var(--spell-gold);
+    transform: translateY(-2px);
+}
+
+/* Compact mode - show only icons for short images */
+.wallpaper-card.compact-mode .action-button .button-label {
+    display: none;
+}
+
+.wallpaper-card.compact-mode .action-button {
+    padding: 0.5rem;
+    min-width: 42px;
+    flex: 0;
+}
+
+.wallpaper-card.compact-mode .wallpaper-actions {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Individual button styling */
+.download-button:hover {
+    background: rgba(40, 167, 69, 0.3);
+    border-color: #28a745;
+    color: #b3ffba;
+}
+
+.rename-button:hover {
+    background: rgba(255, 193, 7, 0.3);
+    border-color: #ffc107;
+    color: #fff4c4;
+}
+
+.favorite-button:hover {
+    background: rgba(220, 53, 69, 0.3);
+    border-color: #dc3545;
+    color: #ffb3ba;
 }
 
 /* ─────────────────────────────────────────────────────────────── */
 /* EMPTY STATE STYLING */
+/* ─────────────────────────────────────────────────────────────── */
 .empty-state {
     text-align: center;
     padding: var(--space-xl);
@@ -235,6 +370,7 @@
 
 /* ─────────────────────────────────────────────────────────────── */
 /* SECTION TITLES */
+/* ─────────────────────────────────────────────────────────────── */
 .section-title {
     text-align: center;
     font-size: 1.8rem;
@@ -256,7 +392,8 @@
 }
 
 /* ─────────────────────────────────────────────────────────────── */
-/* RESPONSIVE */
+/* RESPONSIVE DESIGN */
+/* ─────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .spell-circle-small {
         width: 150px;
@@ -284,5 +421,68 @@
 
     .spell-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* Show overlay by default on mobile since hover doesn't work well */
+    .wallpaper-overlay {
+        opacity: 1;
+        background: linear-gradient(
+                to bottom,
+                transparent 0%,
+                rgba(45, 27, 61, 0.4) 40%,
+                rgba(45, 27, 61, 0.9) 85%
+        );
+    }
+
+    .wallpaper-info,
+    .wallpaper-actions {
+        transform: translateY(0);
+    }
+
+    .wallpaper-info h3 {
+        font-size: 1.1rem;
+    }
+
+    .action-button {
+        padding: 0.45rem 0.65rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .wallpaper-actions {
+        gap: 0.4rem;
+    }
+
+    .action-button {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .action-button .button-icon {
+        font-size: 1rem;
+    }
+
+    /* Use compact mode on very small screens */
+    .wallpaper-card .action-button .button-label {
+        display: none;
+    }
+
+    .wallpaper-card .action-button {
+        padding: 0.45rem;
+        min-width: 40px;
+        flex: 0;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/* ANIMATION KEYFRAMES */
+/* ─────────────────────────────────────────────────────────────── */
+@keyframes rotate-slow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
     }
 }
