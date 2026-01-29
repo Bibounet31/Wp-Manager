@@ -66,6 +66,7 @@ func main() {
 
 	// Static files
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("web/css"))))
+	http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("web/scripts"))))
 
 	port := os.Getenv("PORT")
 	if port == "" {
