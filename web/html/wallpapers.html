@@ -19,6 +19,9 @@
         <a href="/community" class="nav-spell">Community</a>
         <a href="/wallpapers" class="nav-spell active">My wallpapers</a>
         <a href="/profile" class="nav-spell">Profile</a>
+        {{if .IsAdmin}}
+        <a href="/profile" class="nav-spell">ADMIN PANNEL UWU</a>
+        {{end}}
     </nav>
     <div class="header-ornament right"></div>
 </header>
