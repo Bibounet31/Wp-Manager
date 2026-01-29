@@ -34,6 +34,8 @@ var isadmin bool = false
 
 type WallpapersPageData struct {
 	Wallpapers []Wallpaper
+	Username   string
+	IsAdmin    bool
 }
 
 // Register all HTTP routes
@@ -323,7 +325,6 @@ func getCurrentUser(r *http.Request) *UserProfile {
 	return &user
 }
 
-// wallpapersHandler displays user's wallpapers
 func wallpapersHandler(w http.ResponseWriter, r *http.Request) {
 	// ✅ Use getCurrentUser which now checks expiry
 	user := getCurrentUser(r)
@@ -341,11 +342,11 @@ func wallpapersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get user's wallpapers
 	rows, err := db.Query(`
-		SELECT id, filename, original_name, uploaded_at 
-		FROM wallpapers 
-		WHERE user_id = ? 
-		ORDER BY uploaded_at DESC
-	`, userID)
+       SELECT id, filename, original_name, uploaded_at 
+       FROM wallpapers 
+       WHERE user_id = ? 
+       ORDER BY uploaded_at DESC
+    `, userID)
 	if err != nil {
 		log.Println("Failed to query wallpapers:", err)
 		http.Error(w, "Failed to load wallpapers", http.StatusInternalServerError)
@@ -363,7 +364,11 @@ func wallpapersHandler(w http.ResponseWriter, r *http.Request) {
 		wallpapers = append(wallpapers, w)
 	}
 
-	data := WallpapersPageData{Wallpapers: wallpapers}
+	data := WallpapersPageData{
+		Wallpapers: wallpapers,
+		Username:   user.Username,
+		IsAdmin:    user.IsAdmin,
+	}
 	if err := templates.ExecuteTemplate(w, "wallpapers.html", data); err != nil {
 		log.Println("Template error:", err)
 		http.Error(w, "Template error", http.StatusInternalServerError)
