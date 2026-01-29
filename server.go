@@ -121,8 +121,13 @@ func initDatabase() error {
 		return fmt.Errorf("sessions table: %w", err)
 	}
 
+	_, err = db.Exec(`DROP TABLE IF EXISTS wallpapers`)
+	if err != nil {
+		log.Fatal("drop wallpapers table:", err)
+	}
+
 	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS wallpapers (
+		CREATE TABLE wallpapers (
 			id INT AUTO_INCREMENT PRIMARY KEY,
 			user_id INT NOT NULL,
 			filename VARCHAR(255) NOT NULL,
@@ -130,7 +135,7 @@ func initDatabase() error {
 			file_path VARCHAR(500) NOT NULL,
 			uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-		)
+		);
 	`)
 	if err != nil {
 		return fmt.Errorf("wallpapers table: %w", err)
