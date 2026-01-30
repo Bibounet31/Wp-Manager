@@ -55,6 +55,7 @@ func registerRoutes() {
 	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/upload", uploadHandler)
 	http.HandleFunc("/rename", renameHandler)
+	http.HandleFunc("/adminpannel", adminpannelHandler)
 
 	// Serve uploaded files
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
@@ -80,6 +81,19 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := getPageData(r)
 	if err := templates.ExecuteTemplate(w, "index.html", data); err != nil {
+		log.Println("Template error:", err)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+	}
+}
+
+func adminpannelHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	data := getPageData(r)
+	if err := templates.ExecuteTemplate(w, "adminpannel.html", data); err != nil {
 		log.Println("Template error:", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 	}

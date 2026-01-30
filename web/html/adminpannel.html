@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WP - HOME</title>
+    <title>WP - ADMIN PANNEL</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -21,26 +21,10 @@
     <nav class="spell-nav">
         <a href="/community" class="nav-spell">Community</a>
         <a href="/wallpapers" class="nav-spell">My wallpapers</a>
-        <a href="/profile" class="nav-spell active">Profile</a>
+        <a href="/profile" class="nav-spell">Profile</a>
         {{if .IsAdmin}}
-        <a href="/adminpannel" class="nav-spell">ADMIN PANNEL UWU</a>
+        <a href="/adminpannel" class="nav-spell active">ADMIN PANNEL UWU</a>
         {{end}}
     </nav>
     <div class="header-ornament right"></div>
 </header>
-<html>
-<body>
-<!-- Main content area -->
-<main class="tome-content">
-    <!-- Hero section with mystical aesthetic -->
-    <section class="hero-spell">
-        <div class="spell-circle">
-            <div class="circle-outer"></div>
-            <div class="circle-middle"></div>
-            <div class="circle-inner"></div>
-        </div>
-        <h2 class="hero-text">Archive your preferred pictures </h2>
-        <p class="hero-subtext">All ur favorite wallpapers, in once place</p>
-    </section>
-</body>
-</html>
