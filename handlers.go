@@ -19,6 +19,7 @@ type UserProfile struct {
 	Name     string
 	Surname  string
 	IsAdmin  bool
+	UserID   int
 }
 
 type AdminPanelData struct {
@@ -61,7 +62,9 @@ func registerRoutes() {
 	http.HandleFunc("/upload", uploadHandler)
 	http.HandleFunc("/rename", renameHandler)
 	http.HandleFunc("/adminpannel", adminpannelHandler)
-
+	http.HandleFunc("/admin/promote", PromoteUserHandler)
+	http.HandleFunc("/admin/demote", DemoteUserHandler)
+	http.HandleFunc("/admin/deleteacc", DeleteAccHandler)
 	// Serve uploaded files
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }
@@ -75,6 +78,146 @@ func getPageData(r *http.Request) PageData {
 		data.IsAdmin = user.IsAdmin
 	}
 	return data
+}
+
+func DeleteAccHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse POST form
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Invalid form", http.StatusBadRequest)
+		return
+	}
+
+	userID := r.FormValue("user_id") // Fixed: consistent naming
+	if userID == "" {
+		http.Error(w, "User ID missing", http.StatusBadRequest)
+		return
+	}
+
+	// Prevent deleting yourself
+	currentUserID := r.Context().Value("userid") // Make sure this returns a string
+	if currentUserID != nil && fmt.Sprintf("%v", currentUserID) == userID {
+		http.Error(w, "You cannot delete yourself", http.StatusForbidden)
+		return
+	}
+
+	// Execute DELETE (not UPDATE)
+	result, err := db.Exec(`
+        DELETE FROM users
+        WHERE id = ?
+    `, userID) // Fixed: proper function call syntax and use id instead of username
+
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil || rows == 0 {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	// Redirect back to admin panel
+	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
+}
+
+func DemoteUserHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse POST form
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Invalid form", http.StatusBadRequest)
+		return
+	}
+
+	username := r.FormValue("username")
+	if username == "" {
+		http.Error(w, "Username missing", http.StatusBadRequest)
+		return
+	}
+
+	// Prevent promoting yourself (recommended)
+	currentUser := r.Context().Value("username") // or however you store it
+	if currentUser == username {
+		http.Error(w, "You cannot promote yourself", http.StatusForbidden)
+		return
+	}
+
+	// Execute update
+	result, err := db.Exec(`
+        UPDATE users
+        SET isadmin = 0
+        WHERE username = ?
+    `, username)
+
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil || rows == 0 {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	// Redirect back to admin panel
+	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
+}
+
+func PromoteUserHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse POST form
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Invalid form", http.StatusBadRequest)
+		return
+	}
+
+	username := r.FormValue("username")
+	if username == "" {
+		http.Error(w, "Username missing", http.StatusBadRequest)
+		return
+	}
+
+	// Prevent promoting yourself (recommended)
+	currentUser := r.Context().Value("username") // or however you store it
+	if currentUser == username {
+		http.Error(w, "You cannot promote yourself", http.StatusForbidden)
+		return
+	}
+
+	// Execute update
+	result, err := db.Exec(`
+        UPDATE users
+        SET isadmin = 1
+        WHERE username = ?
+    `, username)
+
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil || rows == 0 {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	// Redirect back to admin panel
+	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
 }
 
 // ✅ UPDATED: Index handler
@@ -112,8 +255,8 @@ func adminpannelHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Query all users from database
-	rows, err := db.Query("SELECT username, email, name, surname, isadmin FROM users ORDER BY username")
+	// Query all users from database - ADD id field
+	rows, err := db.Query("SELECT id, username, email, name, surname, isadmin FROM users ORDER BY username")
 	if err != nil {
 		log.Println("Failed to query users:", err)
 		http.Error(w, "Failed to load users", http.StatusInternalServerError)
@@ -124,7 +267,8 @@ func adminpannelHandler(w http.ResponseWriter, r *http.Request) {
 	var allUsers []UserProfile
 	for rows.Next() {
 		var u UserProfile
-		if err := rows.Scan(&u.Username, &u.Email, &u.Name, &u.Surname, &u.IsAdmin); err != nil {
+		// ADD &u.UserID to the scan
+		if err := rows.Scan(&u.UserID, &u.Username, &u.Email, &u.Name, &u.Surname, &u.IsAdmin); err != nil {
 			log.Println("Row scan error:", err)
 			continue
 		}

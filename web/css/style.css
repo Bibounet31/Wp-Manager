@@ -260,7 +260,7 @@ body {
 
 .spell-card {
     background: rgba(61, 41, 82, 0.4);
-    backdrop-filter: blur(10px);
+    /* backdrop-filter: blur(10px); */ /* Comment this out */
     border: 2px solid var(--ethereal-lavender);
     border-radius: 12px;
     padding: var(--space-lg);
@@ -269,17 +269,7 @@ body {
     overflow: hidden;
 }
 
-.spell-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, var(--glow-effect), transparent);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
+
 
 .spell-card:hover {
     transform: translateY(-8px);

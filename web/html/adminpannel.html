@@ -70,23 +70,35 @@
                                 <span class="user-badge">User</span>
                                 {{end}}
                             </td>
+
                             <td class="actions-cell">
                                 <div class="action-buttons">
+                                    {{if ne .Username "admin"}}
                                     {{if not .IsAdmin}}
-                                    <button class="action-btn promote-btn" data-username="{{.Username}}" title="Promote to Admin">
-                                        <span class="btn-icon">⬆️</span>
-                                        <span class="btn-text">Promote</span>
-                                    </button>
+                                    <form method="POST" action="/admin/promote">
+                                        <input type="hidden" name="username" value="{{.Username}}">
+                                        <button type="submit" class="action-btn promote-btn" title="Promote to Admin">
+                                            <span class="btn-icon">⬆️</span>
+                                            <span class="btn-text">Promote</span>
+                                        </button>
+                                    </form>
                                     {{else}}
-                                    <button class="action-btn demote-btn" data-username="{{.Username}}" title="Demote to User">
-                                        <span class="btn-icon">⬇️</span>
-                                        <span class="btn-text">Demote</span>
-                                    </button>
+                                    <form method="POST" action="/admin/demote">
+                                        <input type="hidden" name="username" value="{{.Username}}">
+                                        <button type="submit" class="action-btn demote-btn" title="Demote to User">
+                                            <span class="btn-icon">⬇️</span>
+                                            <span class="btn-text">Demote</span>
+                                        </button>
+                                    </form>
                                     {{end}}
-                                    <button class="action-btn delete-btn" data-username="{{.Username}}" title="Delete User">
-                                        <span class="btn-icon">🗑️</span>
-                                        <span class="btn-text">Delete</span>
-                                    </button>
+                                    <form method="POST" action="/admin/deleteacc">
+                                        <input type="hidden" name="user_id" value="{{.UserID}}">
+                                        <button type="submit" class="action-btn delete-btn" title="Delete User">
+                                            <span class="btn-icon">🗑️</span>
+                                            <span class="btn-text">Delete</span>
+                                        </button>
+                                        {{end}}
+                                    </form>
                                 </div>
                             </td>
                         </tr>
