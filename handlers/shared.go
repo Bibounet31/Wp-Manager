@@ -44,6 +44,7 @@ type Wallpaper struct {
 	OriginalName string
 	FilePath     string
 	UploadedAt   time.Time
+	IsPublic     bool
 }
 
 type WallpapersPageData struct {
@@ -100,8 +101,8 @@ func getCurrentUser(r *http.Request) *UserProfile {
 	}
 
 	var user UserProfile
-	err = db.QueryRow("SELECT username, email, name, surname, isadmin FROM users WHERE id = ?", userID).
-		Scan(&user.Username, &user.Email, &user.Name, &user.Surname, &user.IsAdmin)
+	err = db.QueryRow("SELECT id, username, email, name, surname, isadmin FROM users WHERE id = ?", userID).
+		Scan(&user.UserID, &user.Username, &user.Email, &user.Name, &user.Surname, &user.IsAdmin)
 	if err != nil {
 		return nil
 	}
