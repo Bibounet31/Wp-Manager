@@ -40,6 +40,6 @@ func DemoteUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("✅ User %s demoted by admin", username)
+	log.Printf("User %s demoted by admin", username)
 	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
 }
