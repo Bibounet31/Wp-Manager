@@ -9,3 +9,23 @@ SELECT * FROM mytable;
 
 SHOW DATABASES;
 USE wallpaper_manager
+
+
+///run locally on windows
+
+"C:\Program Files\MariaDB 12.1\bin\mysql.exe" -u root p
+
+CREATE USER 'wpmanager'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('<PASSWORD>');
+GRANT ALL PRIVILEGES ON wallpaper_manager.* TO 'wpmanager'@'localhost';
+FLUSH PRIVILEGES;
+
+CREATE USER 'wpmanager'@'127.0.0.1' IDENTIFIED VIA mysql_native_password USING PASSWORD('PASSWORD');
+GRANT ALL PRIVILEGES ON wallpaper_manager.* TO 'wpmanager'@'127.0.0.1';
+FLUSH PRIVILEGES;
+
+ALTER USER 'wpmanager'@'localhost' IDENTIFIED VIA mysql_native_password USING PASSWORD('PASSWORD');
+FLUSH PRIVILEGES;
+
+go run .
+
+

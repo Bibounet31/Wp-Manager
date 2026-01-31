@@ -12,6 +12,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"wp-manager/handlers"
 )
 
 var db *sql.DB
@@ -61,6 +62,10 @@ func main() {
 			ParseGlob("web/html/*.html"),
 	)
 
+	// Initialize handlers with database and templates
+	handlers.SetDB(db)
+	handlers.SetTemplates(templates)
+
 	// Register routes
 	registerRoutes()
 
@@ -104,7 +109,7 @@ func initDatabase() error {
 			surname VARCHAR(50),
 			password_hash VARCHAR(255) NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		    isadmin bool NOT NULL DEFAULT false
+			isadmin bool NOT NULL DEFAULT false
 		)
 	`)
 	if err != nil {
@@ -123,13 +128,8 @@ func initDatabase() error {
 		return fmt.Errorf("sessions table: %w", err)
 	}
 
-	_, err = db.Exec(`DROP TABLE IF EXISTS wallpapers`)
-	if err != nil {
-		log.Fatal("drop wallpapers table:", err)
-	}
-
 	_, err = db.Exec(`
-		CREATE TABLE wallpapers (
+		CREATE TABLE IF NOT EXISTS wallpapers (
 			id INT AUTO_INCREMENT PRIMARY KEY,
 			user_id INT NOT NULL,
 			filename VARCHAR(255) NOT NULL,
@@ -137,11 +137,30 @@ func initDatabase() error {
 			file_path VARCHAR(500) NOT NULL,
 			uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-		);
+		)
 	`)
 	if err != nil {
 		return fmt.Errorf("wallpapers table: %w", err)
 	}
+
 	log.Println("✅ Database tables initialized!")
 	return nil
+}
+
+// Register all HTTP routes
+func registerRoutes() {
+	http.HandleFunc("/", handlers.IndexHandler)
+	http.HandleFunc("/community", handlers.CommunityHandler)
+	http.HandleFunc("/wallpapers", handlers.WallpapersHandler)
+	http.HandleFunc("/register", handlers.RegisterHandler)
+	http.HandleFunc("/login", handlers.LoginHandler)
+	http.HandleFunc("/profile", handlers.ProfileHandler)
+	http.HandleFunc("/logout", handlers.LogoutHandler)
+	http.HandleFunc("/upload", handlers.UploadHandler)
+	http.HandleFunc("/rename", handlers.RenameHandler)
+	http.HandleFunc("/adminpannel", handlers.AdminpannelHandler)
+	http.HandleFunc("/admin/promote", handlers.PromoteUserHandler)
+	http.HandleFunc("/admin/demote", handlers.DemoteUserHandler)
+	http.HandleFunc("/admin/deleteacc", handlers.DeleteAccHandler)
+	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }
