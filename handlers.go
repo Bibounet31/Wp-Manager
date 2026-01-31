@@ -233,7 +233,7 @@ func adminpannelHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Query all users from database - ADD id field
+	// get all users from db
 	rows, err := db.Query("SELECT id, username, email, name, surname, isadmin FROM users ORDER BY username")
 	if err != nil {
 		log.Println("Failed to query users:", err)
@@ -375,7 +375,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		// Log the login and admin status
 		log.Printf("username: %s successfully logged in, isadmin: %t", username, isAdmin)
 
-		// Redirect to profile
 		http.Redirect(w, r, "/profile", http.StatusSeeOther)
 		return
 	}
@@ -402,7 +401,6 @@ func renameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ✅ Use getUserIDFromSession helper with expiry check
 	userID, err := getUserIDFromSession(r)
 	if err != nil {
 		log.Println("Session error:", err)
@@ -410,7 +408,7 @@ func renameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify that this wallpaper belongs to the user (IMPORTANT for security!)
+	// Verify that this wallpaper belongs to the user, to not share ur private wallpapers with someone else~
 	var ownerID int
 	err = db.QueryRow("SELECT user_id FROM wallpapers WHERE id = ?", wallpaperID).Scan(&ownerID)
 	if err != nil {
@@ -424,7 +422,7 @@ func renameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update the wallpaper name
+	// update wallpaper name
 	_, err = db.Exec("UPDATE wallpapers SET original_name = ? WHERE id = ?", newName, wallpaperID)
 	if err != nil {
 		log.Println("Failed to rename wallpaper:", err)
@@ -434,11 +432,10 @@ func renameHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("✅ Wallpaper %s renamed to: %s by user %d", wallpaperID, newName, userID)
 
-	// Redirect back to wallpapers page
 	http.Redirect(w, r, "/wallpapers", http.StatusSeeOther)
 }
 
-// Print all users in console
+// Print users
 func printAllUsers() {
 	rows, err := db.Query("SELECT id, username, email, name, surname, created_at FROM users")
 	if err != nil {
@@ -461,10 +458,9 @@ func printAllUsers() {
 	}
 }
 
-// profileHandler shows user info if logged in
+// shows user info in profile.html
 func profileHandler(w http.ResponseWriter, r *http.Request) {
-	// ✅ Use getCurrentUser which checks expiry
-	user := getCurrentUser(r)
+	user := getCurrentUser(r) // checks expiry
 	if user == nil {
 		log.Println("❌ No valid session")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -488,7 +484,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
-// ✅ NEW: Helper function to get user ID from session WITH expiry check
+// Helper function to get user ID from session WITH expiry check
 func getUserIDFromSession(r *http.Request) (int, error) {
 	cookie, err := r.Cookie("session_id")
 	if err != nil {
@@ -503,7 +499,7 @@ func getUserIDFromSession(r *http.Request) (int, error) {
 		return 0, fmt.Errorf("session not found: %w", err)
 	}
 
-	// ✅ Check if session expired
+	// Check if session expired
 	if time.Now().After(expiresAt) {
 		// Clean up expired session
 		db.Exec("DELETE FROM sessions WHERE id = ?", cookie.Value)
@@ -531,14 +527,13 @@ func getCurrentUser(r *http.Request) *UserProfile {
 }
 
 func wallpapersHandler(w http.ResponseWriter, r *http.Request) {
-	// ✅ Use getCurrentUser which now checks expiry
 	user := getCurrentUser(r)
 	if user == nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
 	}
 
-	// ✅ Use helper to get userID with expiry check
+	// Use helper to get userID with expiry check
 	userID, err := getUserIDFromSession(r)
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
@@ -580,24 +575,18 @@ func wallpapersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// uploadHandler handles wallpaper uploads
+// handles wallpaper uploads
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// ✅ Use helper with expiry check
+	// expiry check
 	userID, err := getUserIDFromSession(r)
 	if err != nil {
 		log.Println("Upload: Session error:", err)
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-
-	// Parse multipart form (32MB max)
-	if err := r.ParseMultipartForm(32 << 20); err != nil {
-		http.Error(w, "File too large", http.StatusBadRequest)
 		return
 	}
 
@@ -609,7 +598,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// ✅ Validate file extension
+	// check file extension
 	ext := filepath.Ext(header.Filename)
 	allowedExts := map[string]bool{".jpg": true, ".jpeg": true, ".png": true, ".gif": true, ".webp": true}
 	if !allowedExts[ext] {
@@ -617,16 +606,16 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ✅ Validate filename length
+	// check filename length
 	if len(header.Filename) > 255 {
 		http.Error(w, "Filename too long", http.StatusBadRequest)
 		return
 	}
 
-	// Create uploads directory if it doesn't exist
+	// Create uploads folder if it doesn't exist
 	os.MkdirAll("web/uploads", 0755)
 
-	// Generate unique filename
+	// Generate random filename
 	filename := fmt.Sprintf("%d_%s%s", userID, uuid.New().String(), ext)
 	filePath := filepath.Join("web/uploads", filename)
 
