@@ -91,6 +91,13 @@
                                 <span class="button-icon">🗑️</span>
                                 <span class="button-label">Delete</span>
                             </button>
+
+                            <button class="action-button publish-button" data-wallpaper-id="{{.ID}}" data-is-public="{{.IsPublic}}">
+                                <span class="button-icon">🌍</span>
+                                <span class="button-label">
+                                {{if .IsPublic}}Unpublish{{else}}Make Public{{end}}
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>

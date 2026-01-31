@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WP - PROFILE</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="magic-particles"></div>
+
+<header class="grimoire-header">
+    <div class="header-ornament left"></div>
+    <h1 class="site-title">
+        <span class="title-rune">✦</span>
+        Welcome to WPManager !
+        <span class="title-rune">✦</span>
+    </h1>
+    <nav class="spell-nav">
+        <a href="/community" class="nav-spell">Community</a>
+        <a href="/wallpapers" class="nav-spell">My wallpapers</a>
+        <a href="/profile" class="nav-spell">Profile</a>
+        <a href="/profile" class="nav-spell active">Publish</a>
+        {{if .IsAdmin}}
+        <a href="/adminpannel" class="nav-spell">ADMIN PANNEL UWU</a>
+        {{end}}
+    </nav>
+    <div class="header-ornament right"></div>
+</header>
