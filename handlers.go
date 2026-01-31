@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// structs:
 type UserProfile struct {
 	Username string
 	Email    string
@@ -36,21 +37,18 @@ type Wallpaper struct {
 	UploadedAt   time.Time
 }
 
-var isadmin bool = false
-
 type WallpapersPageData struct {
 	Wallpapers []Wallpaper
 	Username   string
 	IsAdmin    bool
 }
 
-// ✅ NEW: Common page data structure
 type PageData struct {
 	Username string
 	IsAdmin  bool
 }
 
-// Register all HTTP routes
+// HTTP ROUTES
 func registerRoutes() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/community", communityHandler)
@@ -65,11 +63,10 @@ func registerRoutes() {
 	http.HandleFunc("/admin/promote", PromoteUserHandler)
 	http.HandleFunc("/admin/demote", DemoteUserHandler)
 	http.HandleFunc("/admin/deleteacc", DeleteAccHandler)
-	// Serve uploaded files
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }
 
-// ✅ NEW: Helper function to get page data with user info
+// get page data with user infos
 func getPageData(r *http.Request) PageData {
 	data := PageData{}
 	user := getCurrentUser(r)
@@ -86,30 +83,29 @@ func DeleteAccHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse POST form
+	// check if POST
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Invalid form", http.StatusBadRequest)
 		return
 	}
 
-	userID := r.FormValue("user_id") // Fixed: consistent naming
+	userID := r.FormValue("user_id")
 	if userID == "" {
 		http.Error(w, "User ID missing", http.StatusBadRequest)
 		return
 	}
 
-	// Prevent deleting yourself
+	// Prevent deleting yourself, that would suck
 	currentUserID := r.Context().Value("userid") // Make sure this returns a string
 	if currentUserID != nil && fmt.Sprintf("%v", currentUserID) == userID {
 		http.Error(w, "You cannot delete yourself", http.StatusForbidden)
 		return
 	}
-
-	// Execute DELETE (not UPDATE)
+	//SQL stuff deleting
 	result, err := db.Exec(`
         DELETE FROM users
         WHERE id = ?
-    `, userID) // Fixed: proper function call syntax and use id instead of username
+    `, userID)
 
 	if err != nil {
 		http.Error(w, "Database error", http.StatusInternalServerError)
@@ -126,30 +122,20 @@ func DeleteAccHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
 }
 
+// goes from admin > user
 func DemoteUserHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Parse POST form
+	// check if POST
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Invalid form", http.StatusBadRequest)
 		return
 	}
 
 	username := r.FormValue("username")
-	if username == "" {
-		http.Error(w, "Username missing", http.StatusBadRequest)
-		return
-	}
-
-	// Prevent promoting yourself (recommended)
-	currentUser := r.Context().Value("username") // or however you store it
-	if currentUser == username {
-		http.Error(w, "You cannot promote yourself", http.StatusForbidden)
-		return
-	}
 
 	// Execute update
 	result, err := db.Exec(`
@@ -169,17 +155,17 @@ func DemoteUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Redirect back to admin panel
 	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
 }
 
+// promote a user (like it wasn't obvious)
 func PromoteUserHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Parse POST form
+	// check if post
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Invalid form", http.StatusBadRequest)
 		return
@@ -188,13 +174,6 @@ func PromoteUserHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	if username == "" {
 		http.Error(w, "Username missing", http.StatusBadRequest)
-		return
-	}
-
-	// Prevent promoting yourself (recommended)
-	currentUser := r.Context().Value("username") // or however you store it
-	if currentUser == username {
-		http.Error(w, "You cannot promote yourself", http.StatusForbidden)
 		return
 	}
 
@@ -220,7 +199,6 @@ func PromoteUserHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
 }
 
-// ✅ UPDATED: Index handler
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -287,7 +265,6 @@ func adminpannelHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// ✅ UPDATED: Community handler
 func communityHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -351,7 +328,6 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// GET → show form
 	templates.ExecuteTemplate(w, "register.html", nil)
 }
 
@@ -366,7 +342,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		var hashedPassword string
 		var isAdmin bool
 
-		// Fetch user data including isadmin from DB
+		// Fetch user data from db
 		err := db.QueryRow("SELECT id, password_hash, isadmin FROM users WHERE username = ?", username).
 			Scan(&userID, &hashedPassword, &isAdmin)
 		if err != nil {
@@ -380,13 +356,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Create session
+		// Create session wooo
 		sessionID := uuid.New().String()
 		expiresAt := time.Now().Add(24 * time.Hour)
 
 		_, _ = db.Exec("INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)", sessionID, userID, expiresAt)
 
-		// Set session cookie
+		// Set session cookie (yum)
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_id",
 			Value:    sessionID,
@@ -404,7 +380,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// GET → show login form
 	templates.ExecuteTemplate(w, "login.html", nil)
 }
 
@@ -418,7 +393,6 @@ func renameHandler(w http.ResponseWriter, r *http.Request) {
 	wallpaperID := r.FormValue("wallpaper_id")
 	newName := r.FormValue("new_name")
 
-	// ✅ Enhanced validation
 	if wallpaperID == "" || newName == "" {
 		http.Error(w, "Missing wallpaper ID or new name", http.StatusBadRequest)
 		return
