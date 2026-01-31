@@ -1,4 +1,4 @@
-/// this file contains everything that is needed for the handlers to work properly
+// / this file contains everything that is needed for the handlers to work properly
 package handlers
 
 import (
@@ -92,7 +92,7 @@ func getUserIDFromSession(r *http.Request) (int, error) {
 	return userID, nil
 }
 
-//  returns the logged-in user or nil if not logged in
+// returns the logged-in user or nil if not logged in
 func getCurrentUser(r *http.Request) *UserProfile {
 	userID, err := getUserIDFromSession(r)
 	if err != nil {
@@ -109,7 +109,7 @@ func getCurrentUser(r *http.Request) *UserProfile {
 	return &user
 }
 
-//  prints all users to console
+// prints all users to console
 func printAllUsers() {
 	rows, err := db.Query("SELECT id, username, email, name, surname, created_at FROM users")
 	if err != nil {
