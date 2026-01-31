@@ -11,8 +11,9 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
 	"wp-manager/handlers"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
@@ -162,5 +163,6 @@ func registerRoutes() {
 	http.HandleFunc("/admin/promote", handlers.PromoteUserHandler)
 	http.HandleFunc("/admin/demote", handlers.DemoteUserHandler)
 	http.HandleFunc("/admin/deleteacc", handlers.DeleteAccHandler)
+	http.HandleFunc("/forgot-password", handlers.ForgotpasswordHandler)
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }
