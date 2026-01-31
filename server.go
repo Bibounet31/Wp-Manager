@@ -130,15 +130,20 @@ func initDatabase() error {
 	}
 
 	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS wallpapers (
+	DROP TABLE IF EXISTS wallpapers;
+`)
+
+	_, err = db.Exec(`
+		CREATE TABLE wallpapers (
 			id INT AUTO_INCREMENT PRIMARY KEY,
 			user_id INT NOT NULL,
 			filename VARCHAR(255) NOT NULL,
 			original_name VARCHAR(255) NOT NULL,
 			file_path VARCHAR(500) NOT NULL,
 			uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		    ispublic bool NOT NULL DEFAULT false,
 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-		)
+		);
 	`)
 	if err != nil {
 		return fmt.Errorf("wallpapers table: %w", err)
@@ -164,5 +169,6 @@ func registerRoutes() {
 	http.HandleFunc("/admin/demote", handlers.DemoteUserHandler)
 	http.HandleFunc("/admin/deleteacc", handlers.DeleteAccHandler)
 	http.HandleFunc("/forgot-password", handlers.ForgotpasswordHandler)
+	http.HandleFunc("/publish", handlers.PublishHandler)
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }
