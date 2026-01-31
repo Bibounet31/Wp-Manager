@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallpaper Grimoire - Profile</title>
+    <title>WP - PROFILE</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-<!-- Magical particles background -->
 <div class="magic-particles"></div>
 
-<!-- Header with floating spell book aesthetic -->
 <header class="grimoire-header">
     <div class="header-ornament left"></div>
     <h1 class="site-title">
@@ -22,13 +20,14 @@
         <a href="/community" class="nav-spell">Community</a>
         <a href="/wallpapers" class="nav-spell">My wallpapers</a>
         <a href="/profile" class="nav-spell active">Profile</a>
+        {{if .IsAdmin}}
+        <a href="/adminpannel" class="nav-spell">ADMIN PANNEL UWU</a>
+        {{end}}
     </nav>
     <div class="header-ornament right"></div>
 </header>
 
-<!-- Main content area -->
 <main class="tome-content">
-    <!-- Hero section with user info -->
     <section class="hero-spell profile-section">
         <div class="spell-circle">
             <div class="circle-outer"></div>
@@ -38,7 +37,6 @@
         <h2 class="hero-text">Hello, {{.Username}}!</h2>
         <p class="hero-subtext">Here’s your personal archive details</p>
 
-        <!-- User info card -->
         <div class="profile-card">
             <h3>Your Information</h3>
             <ul>

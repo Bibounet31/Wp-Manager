@@ -66,6 +66,7 @@ func main() {
 
 	// Static files
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("web/css"))))
+	http.Handle("/scripts/", http.StripPrefix("/scripts/", http.FileServer(http.Dir("web/scripts"))))
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -102,7 +103,8 @@ func initDatabase() error {
 			name VARCHAR(50),
 			surname VARCHAR(50),
 			password_hash VARCHAR(255) NOT NULL,
-			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		    isadmin bool NOT NULL DEFAULT false
 		)
 	`)
 	if err != nil {
@@ -121,8 +123,13 @@ func initDatabase() error {
 		return fmt.Errorf("sessions table: %w", err)
 	}
 
+	_, err = db.Exec(`DROP TABLE IF EXISTS wallpapers`)
+	if err != nil {
+		log.Fatal("drop wallpapers table:", err)
+	}
+
 	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS wallpapers (
+		CREATE TABLE wallpapers (
 			id INT AUTO_INCREMENT PRIMARY KEY,
 			user_id INT NOT NULL,
 			filename VARCHAR(255) NOT NULL,
@@ -130,7 +137,7 @@ func initDatabase() error {
 			file_path VARCHAR(500) NOT NULL,
 			uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-		)
+		);
 	`)
 	if err != nil {
 		return fmt.Errorf("wallpapers table: %w", err)

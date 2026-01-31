@@ -1,0 +1,11 @@
+scalingo --app wp-manager mysql-console connect to mysql of curent app
+
+
+-- Show all tables
+SHOW TABLES;
+
+-- See your specific table
+SELECT * FROM mytable;
+
+SHOW DATABASES;
+USE wallpaper_manager

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enter the Grimoire - Login</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/login.css">
+    <title>WP - MY WALLPAPERS</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/wallpapers.css">
 </head>
 <body>
 <header class="grimoire-header">
@@ -19,16 +19,16 @@
         <a href="/community" class="nav-spell">Community</a>
         <a href="/wallpapers" class="nav-spell active">My wallpapers</a>
         <a href="/profile" class="nav-spell">Profile</a>
+        {{if .IsAdmin}}
+        <a href="/adminpannel" class="nav-spell">ADMIN PANNEL UWU</a>
+        {{end}}
     </nav>
     <div class="header-ornament right"></div>
 </header>
 
-<!-- Magical particles background -->
 <div class="magic-particles"></div>
 
-<!-- Main content area -->
 <main class="tome-content">
-    <!-- Upload section -->
     <section class="upload-spell">
         <div class="spell-circle-small">
             <div class="circle-outer"></div>
@@ -44,11 +44,11 @@
         <form action="/upload" method="POST" enctype="multipart/form-data" class="upload-form">
             <div class="upload-card">
                 <label for="wallpaper" class="upload-label">
-                    <span class="upload-icon">📁</span>
+                    <span class="upload-icon">🖼</span>
                     <span class="upload-text">Choose your wallpaper</span>
                     <input type="file" id="wallpaper" name="wallpaper" accept="image/*" required>
                 </label>
-                <button type="submit" class="cast-button upload-button">
+                <button type="submit" class="upload-button">
                     <span class="button-text">✨ Upload to Archive ✨</span>
                     <span class="button-glow"></span>
                 </button>
@@ -56,7 +56,6 @@
         </form>
     </section>
 
-    <!-- Wallpapers gallery -->
     <section class="wallpaper-gallery">
         <h2 class="section-title">
             <span class="title-line"></span>
@@ -67,16 +66,33 @@
         {{if .Wallpapers}}
         <div class="spell-grid">
             {{range .Wallpapers}}
-            <div class="wallpaper-card">
-                <div class="wallpaper-image">
-                    <img src="/uploads/{{.Filename}}" alt="{{.OriginalName}}" height="400">
-                </div>
-                <div class="wallpaper-info">
-                    <h3>{{.OriginalName}}</h3>
-                    <p class="upload-date">Uploaded: {{.UploadedAt}}</p>
-                    <a href="/uploads/{{.Filename}}" download class="download-button">
-                        ⬇️ Download
-                    </a>
+            <div class="wallpaper-card" data-wallpaper-id="{{.ID}}">
+                <div class="wallpaper-image-container">
+                    <img src="/uploads/{{.Filename}}" alt="{{.OriginalName}}" class="wallpaper-image">
+                    <div class="wallpaper-overlay">
+                        <div class="wallpaper-info">
+                            <h3>{{.OriginalName}}</h3>
+                            <p class="upload-date">{{.UploadedAt.Format "Jan 2, 2006 at 3:04 PM"}}</p>
+                        </div>
+                        <div class="wallpaper-actions">
+                            <a href="/uploads/{{.Filename}}" download="{{.OriginalName}}" class="action-button download-button">
+                                <span class="button-icon">⬇️</span>
+                                <span class="button-label">Download</span>
+                            </a>
+                            <button class="action-button rename-button" data-wallpaper-id="{{.ID}}">
+                                <span class="button-icon">✏️</span>
+                                <span class="button-label">Rename</span>
+                            </button>
+                            <a href="#" class="action-button favorite-button" data-wallpaper-id="{{.ID}}">
+                                <span class="button-icon">❤️</span>
+                                <span class="button-label">Favorite</span>
+                            </a>
+                            <button class="action-button delete-button" data-wallpaper-id="{{.ID}}">
+                                <span class="button-icon">🗑️</span>
+                                <span class="button-label">Delete</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             {{end}}
@@ -89,7 +105,6 @@
     </section>
 </main>
 
-<!-- Footer -->
 <footer class="grimoire-footer">
     <div class="footer-ornament"></div>
     <p class="footer-text">
@@ -99,5 +114,8 @@
     </p>
     <p class="footer-small">Created with ancient magic and modern code</p>
 </footer>
+
+<script src="/scripts/rename.js"></script>
+<script src="/scripts/wallpaper-compact.js"></script>
 </body>
 </html>
