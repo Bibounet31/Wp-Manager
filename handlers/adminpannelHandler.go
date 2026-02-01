@@ -27,7 +27,7 @@ func AdminpannelHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rows, err := db.Query(`
-        SELECT id, filename, original_name, uploaded_at, ispublic, user_id
+        SELECT id, filename, original_name, uploaded_at, ispublic, toreview, user_id
         FROM wallpapers 
         WHERE toreview = 1
         ORDER BY uploaded_at DESC
@@ -50,7 +50,7 @@ func AdminpannelHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// get all users from db
-	rows, err = db.Query("SELECT id, username, email, name, surname, toreview , isadmin FROM users ORDER BY username")
+	rows, err = db.Query("SELECT id, username, email, name, surname, isadmin FROM users ORDER BY username")
 	if err != nil {
 		log.Println("Failed to query users:", err)
 		http.Error(w, "Failed to load users", http.StatusInternalServerError)
