@@ -141,6 +141,7 @@ func initDatabase() error {
 			original_name VARCHAR(255) NOT NULL,
 			file_path VARCHAR(500) NOT NULL,
 			uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			toreview bool NOT NULL DEFAULT false,
 		    ispublic bool NOT NULL DEFAULT false,
 			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 		);
@@ -170,5 +171,6 @@ func registerRoutes() {
 	http.HandleFunc("/admin/deleteacc", handlers.DeleteAccHandler)
 	http.HandleFunc("/forgot-password", handlers.ForgotpasswordHandler)
 	http.HandleFunc("/publish", handlers.PublishHandler)
+	http.HandleFunc("/toreview", handlers.ReviewHandler)
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }
