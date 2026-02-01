@@ -1,4 +1,4 @@
-scalingo --app wp-manager mysql-console connect to mysql of curent app
+gitg connect to mysql of curent app
 
 
 -- Show all tables

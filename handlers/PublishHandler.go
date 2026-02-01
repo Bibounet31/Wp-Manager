@@ -61,10 +61,11 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to unpublish wallpaper", http.StatusInternalServerError)
 			return
 		}
+
 		log.Printf("Wallpaper %s unpublished by user %d", wallpaperID, userID)
 	} else {
 		// if private > make it public
-		result, err = db.Exec("UPDATE wallpapers SET ispublic = 1 WHERE id = ?", wallpaperID)
+		result, err = db.Exec("UPDATE wallpapers SET ispublic = 1, toreview = 0 WHERE id = ?", wallpaperID)
 		if err != nil {
 			log.Println("Failed to publish wallpaper:", err)
 			http.Error(w, "Failed to publish wallpaper", http.StatusInternalServerError)
