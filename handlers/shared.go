@@ -35,6 +35,7 @@ type UserProfile struct {
 type AdminPanelData struct {
 	CurrentUser *UserProfile
 	AllUsers    []UserProfile
+	Wallpapers  []Wallpaper
 }
 
 type Wallpaper struct {
@@ -45,6 +46,7 @@ type Wallpaper struct {
 	FilePath     string
 	UploadedAt   time.Time
 	IsPublic     bool
+	ToReview     bool
 }
 
 type WallpapersPageData struct {

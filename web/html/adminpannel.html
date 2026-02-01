@@ -5,108 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - WPManager</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel ="stylesheet" href="../css/wallpapers.css">
 </head>
 <body>
+
 <div class="magic-particles"></div>
 
 <header class="grimoire-header">
     <div class="header-ornament left"></div>
+
     <h1 class="site-title">
         <span class="title-rune">✦</span>
         Admin Panel
         <span class="title-rune">✦</span>
     </h1>
+
     <nav class="spell-nav">
         <a href="/community" class="nav-spell">Community</a>
         {{if .CurrentUser.IsAdmin}}
         <a href="/wallpapers" class="nav-spell">My wallpapers</a>
         <a href="/profile" class="nav-spell">Profile</a>
-        <a href="/adminpannel" class="nav-spell active">Admin Panel</a>
+        <a href="/adminpanel" class="nav-spell active">Admin Panel</a>
         {{end}}
     </nav>
+
     <div class="header-ornament right"></div>
 </header>
 
 <main class="tome-content">
+
+    <!-- USER MANAGEMENT -->
     <section class="hero-spell">
         <div class="spell-circle">
             <div class="circle-outer"></div>
             <div class="circle-middle"></div>
             <div class="circle-inner"></div>
         </div>
-        <h2 class="hero-text">User Management</h2>
-        <p class="hero-subtext">Logged in as: {{.CurrentUser.Username}} (Admin)</p>
+        <h2 class="hero-text">Active accounts</h2>
+        <p class="hero-subtext">
+            Logged in as: {{.CurrentUser.Username}} (Admin)
+        </p>
     </section>
 
-    <div class="spell-card">
+    <section class="spell-card">
         <div class="card-header">
             <h3>Users Management</h3>
         </div>
+
         <div class="card-body">
             <div class="card-stats">
-                    <table class="users-table">
-                        <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Name</th>
-                            <th>Surname</th>
-                            <th>Email</th>
-                            <th>Admin Status</th>
-                            <th class="actions-column">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {{range .AllUsers}}
-                        <tr>
-                            <td>{{.Username}}</td>
-                            <td>{{.Name}}</td>
-                            <td>{{.Surname}}</td>
-                            <td>{{.Email}}</td>
-                            <td>
-                                {{if .IsAdmin}}
-                                <span class="admin-badge">Admin</span>
-                                {{else}}
-                                <span class="user-badge">User</span>
-                                {{end}}
-                            </td>
+                <table class="users-table">
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Email</th>
+                        <th>Admin Status</th>
+                        <th class="actions-column">Actions</th>
+                    </tr>
+                    </thead>
 
-                            <td class="actions-cell">
-                                <div class="action-buttons">
-                                    {{if ne .Username "admin"}}
-                                    {{if not .IsAdmin}}
-                                    <form method="POST" action="/admin/promote">
-                                        <input type="hidden" name="username" value="{{.Username}}">
-                                        <button type="submit" class="action-btn promote-btn" title="Promote to Admin">
-                                            <span class="btn-icon">⬆️</span>
-                                            <span class="btn-text">Promote</span>
-                                        </button>
-                                    </form>
-                                    {{else}}
-                                    <form method="POST" action="/admin/demote">
-                                        <input type="hidden" name="username" value="{{.Username}}">
-                                        <button type="submit" class="action-btn demote-btn" title="Demote to User">
-                                            <span class="btn-icon">⬇️</span>
-                                            <span class="btn-text">Demote</span>
-                                        </button>
-                                    </form>
-                                    {{end}}
-                                    <form method="POST" action="/admin/deleteacc">
-                                        <input type="hidden" name="user_id" value="{{.UserID}}">
-                                        <button type="submit" class="action-btn delete-btn" title="Delete User">
-                                            <span class="btn-icon">🗑️</span>
-                                            <span class="btn-text">Delete</span>
-                                        </button>
-                                        {{end}}
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {{end}}
-                        </tbody>
-                    </table>
+                    <tbody>
+                    {{range .AllUsers}}
+                    <tr>
+                        <td>{{.Username}}</td>
+                        <td>{{.Name}}</td>
+                        <td>{{.Surname}}</td>
+                        <td>{{.Email}}</td>
+                        <td>
+                            {{if .IsAdmin}}
+                            <span class="admin-badge">Admin</span>
+                            {{else}}
+                            <span class="user-badge">User</span>
+                            {{end}}
+                        </td>
+
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+
+                                {{if ne .Username "admin"}}
+
+                                {{if not .IsAdmin}}
+                                <form method="POST" action="/admin/promote">
+                                    <input type="hidden" name="username" value="{{.Username}}">
+                                    <button type="submit" class="action-btn promote-btn" title="Promote to Admin">
+                                        <span class="btn-icon">⬆️</span>
+                                        <span class="btn-text">Promote</span>
+                                    </button>
+                                </form>
+                                {{else}}
+                                <form method="POST" action="/admin/demote">
+                                    <input type="hidden" name="username" value="{{.Username}}">
+                                    <button type="submit" class="action-btn demote-btn" title="Demote to User">
+                                        <span class="btn-icon">⬇️</span>
+                                        <span class="btn-text">Demote</span>
+                                    </button>
+                                </form>
+                                {{end}}
+
+                                <form method="POST" action="/admin/deleteacc">
+                                    <input type="hidden" name="user_id" value="{{.UserID}}">
+                                    <button type="submit" class="action-btn delete-btn" title="Delete User">
+                                        <span class="btn-icon">🗑️</span>
+                                        <span class="btn-text">Delete</span>
+                                    </button>
+                                </form>
+
+                                {{end}}
+
+                            </div>
+                        </td>
+                    </tr>
+                    {{end}}
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- WALLPAPER REVIEW -->
+    <section class="hero-spell">
+        <h2 class="hero-text">Review list</h2>
+    </section>
+
+    <section class="spell-card">
+        <div class="card-header">
+            <h3>Submitted wallpapers</h3>
+        </div>
+
+        <div class="card-body">
+            <div class="card-stats">
+
+                {{if .Wallpapers}}
+                <div class="spell-grid">
+                    {{range .Wallpapers}}
+                    <div class="wallpaper-card" data-wallpaper-id="{{.ID}}">
+                        <div class="wallpaper-image-container">
+                            <img src="/uploads/{{.Filename}}"
+                                 alt="{{.OriginalName}}"
+                                 class="wallpaper-image">
+
+                            <div class="wallpaper-overlay">
+                                <div class="wallpaper-info">
+                                    <h3>{{.OriginalName}}</h3>
+                                    <p class="upload-date">
+                                        {{.UploadedAt.Format "Jan 2, 2006 at 3:04 PM"}}
+                                    </p>
+                                </div>
+
+                                <div class="wallpaper-actions">
+                                    <button type="button"
+                                            class="action-button favorite-button"
+                                            data-wallpaper-id="{{.ID}}">
+                                        <span class="button-icon">❤️</span>
+                                        <span class="button-label">Accept</span>
+                                    </button>
+
+                                    <button type="button"
+                                            class="action-button delete-button"
+                                            data-wallpaper-id="{{.ID}}">
+                                        <span class="button-icon">🗑️</span>
+                                        <span class="button-label">Delete</span>
+                                    </button>
+
+                                    <form action="/toreview" method="POST" style="display:inline;">
+                                        <input type="hidden" name="wallpaper_id" value="{{.ID}}">
+                                        <button type="submit" class="action-button publish-button">
+                                            <span class="button-icon">🌍</span>
+                                            <span class="button-label">
+                                                {{if .IsPublic}}Unpublish{{else}}Make Public{{end}}
+                                            </span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    {{end}}
+                </div>
+                {{end}}
+
+            </div>
+        </div>
+    </section>
+
 </main>
 
 <footer class="grimoire-footer">
@@ -118,5 +202,6 @@
     </p>
     <p class="footer-small">Created with ancient magic and modern code</p>
 </footer>
+
 </body>
 </html>

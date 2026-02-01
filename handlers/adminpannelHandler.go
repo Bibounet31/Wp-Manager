@@ -26,8 +26,31 @@ func AdminpannelHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	rows, err := db.Query(`
+        SELECT id, filename, original_name, uploaded_at, ispublic, user_id
+        FROM wallpapers 
+        WHERE toreview = 1
+        ORDER BY uploaded_at DESC
+    `)
+	if err != nil {
+		log.Println("Failed to query wallpapers:", err)
+		http.Error(w, "Failed to load wallpapers", http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var wallpapers []Wallpaper
+	for rows.Next() {
+		var w Wallpaper
+		if err := rows.Scan(&w.ID, &w.Filename, &w.OriginalName, &w.UploadedAt, &w.IsPublic, &w.ToReview, &w.UserID); err != nil {
+			log.Println("Row scan error:", err)
+			continue
+		}
+		wallpapers = append(wallpapers, w)
+	}
+
 	// get all users from db
-	rows, err := db.Query("SELECT id, username, email, name, surname, isadmin FROM users ORDER BY username")
+	rows, err = db.Query("SELECT id, username, email, name, surname, isadmin FROM users ORDER BY username")
 	if err != nil {
 		log.Println("Failed to query users:", err)
 		http.Error(w, "Failed to load users", http.StatusInternalServerError)
@@ -49,6 +72,7 @@ func AdminpannelHandler(w http.ResponseWriter, r *http.Request) {
 	data := AdminPanelData{
 		CurrentUser: user,
 		AllUsers:    allUsers,
+		Wallpapers:  wallpapers,
 	}
 
 	if err := templates.ExecuteTemplate(w, "adminpannel.html", data); err != nil {
