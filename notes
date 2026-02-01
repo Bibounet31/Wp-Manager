@@ -11,6 +11,10 @@ SHOW DATABASES;
 USE wallpaper_manager
 
 
+
+//connect to db locally on arch
+mariadb -u wpmannager -p
+
 ///run locally on windows
 
 "C:\Program Files\MariaDB 12.1\bin\mysql.exe" -u root p

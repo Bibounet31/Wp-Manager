@@ -68,5 +68,7 @@ Each user can manage their own wallpapers and interact with others through socia
 
 [V] since pictures aren't saved when the container reboots, we need to clear the db where the pics are missing on start. (to not have only the name with a missing picture)
 
+[ ] ENABLE/DISABLE logs (for debug purposes)
+
 ## Goal
 Build a customizable wallpaper management and sharing platform with an exhibition-style layout and community features.
