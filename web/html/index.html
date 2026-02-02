@@ -19,13 +19,55 @@
     <nav class="spell-nav">
         <a href="/community" class="nav-spell">Community</a>
         <a href="/wallpapers" class="nav-spell">My wallpapers</a>
-        <a href="/profile" class="nav-spell active">Profile</a>
+        <a href="/profile" class="nav-spell">Profile</a>
         {{if .IsAdmin}}
         <a href="/adminpannel" class="nav-spell">ADMIN PANNEL UWU</a>
         {{end}}
     </nav>
+
+    <!-- Notis -->
+    <div class="notification-container">
+        <button class="notification-bell" id="notificationBell">
+            <span class="bell-icon">🔔</span>
+            <span class="notification-badge" id="notificationCount">3</span>
+        </button>
+        <div class="notification-dropdown" id="notificationDropdown">
+            <div class="notification-header">
+                <h3>Notifications</h3>
+                <button class="mark-all-read">Mark all as read</button>
+            </div>
+            <!-- example notis, see todo for next stuff why is this green what-->
+            <div class="notification-list">
+                <div class="notification-item unread">
+                    <div class="notification-content">
+                        <p class="notification-text">Your wallpaper was approved!</p>
+                        <span class="notification-time">5 minutes ago</span>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <p class="notification-text">New user joined the community</p>
+                        <span class="notification-time">2 hours ago</span>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <p class="notification-text">Your wallpaper is now public</p>
+                        <span class="notification-time">Yesterday</span>
+                    </div>
+                </div>
+            </div>
+            <div class="notification-footer">
+                <a href="/notifications" class="view-all-link">View all notifications</a>
+            </div>
+        </div>
+    </div>
+    <div class="header-ornament right"></div>
     <div class="header-ornament right"></div>
 </header>
+
+
+
 <html>
 <body>
 <main class="tome-content">
@@ -38,5 +80,6 @@
         <h2 class="hero-text">Archive your preferred pictures </h2>
         <p class="hero-subtext">All ur favorite wallpapers, in once place</p>
     </section>
+    <script src="/scripts/notis.js"></script>
 </body>
 </html>
