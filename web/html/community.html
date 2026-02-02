@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WP - COMMUNITY</title>
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/wallpapers.css">
 </head>
 <body>
 <div class="magic-particles"></div>
@@ -88,27 +89,33 @@
             Wallpaper of the Month
             <span class="title-line"></span>
         </h2>
-        <div class="featured-card">
-            <div class="featured-image">
-                <div class="image-placeholder">
-                    <span class="placeholder-text">✨ Featured Image ✨</span>
+        {{if .Wallpapers}}
+        <div class="spell-grid">
+            {{range .Wallpapers}}
+            <div class="wallpaper-card" data-wallpaper-id="{{.ID}}">
+                <div class="wallpaper-image-container">
+                    <img src="/uploads/{{.Filename}}" alt="{{.OriginalName}}" class="wallpaper-image">
+                    <div class="wallpaper-overlay">
+                        <div class="wallpaper-info">
+                            <h3>{{.OriginalName}}</h3>
+                            <p class="upload-date">{{.UploadedAt.Format "Jan 2, 2006 at 3:04 PM"}}</p>
+                        </div>
+                        <div class="wallpaper-actions">
+                            <a href="/uploads/{{.Filename}}" download="{{.OriginalName}}" class="action-button download-button">
+                                <span class="button-icon">⬇️</span>
+                                <span class="button-label">Download</span>
+                            </a>
+                            <a href="#" class="action-button favorite-button" data-wallpaper-id="{{.ID}}">
+                                <span class="button-icon">❤️</span>
+                                <span class="button-label">Favorite</span>
+                            </a>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="featured-info">
-                <h3>Eternal Journey</h3>
-                <p class="featured-meta">Uploaded by <span class="mage-name">Frieren</span></p>
-                <p class="featured-description">
-                    A vast landscape stretching into eternity, where the path winds through
-                    ancient forests and forgotten ruins. Time flows differently here, in this
-                    captured moment of endless adventure.
-                </p>
-                <div class="featured-tags">
-                    <span class="tag">Fantasy</span>
-                    <span class="tag">Landscape</span>
-                    <span class="tag">4K</span>
-                </div>
-            </div>
-        </div>
+            {{end}}
+        {{end}}
     </section>
 </main>
 

@@ -45,7 +45,10 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if ownerID != userID {
+	user := getCurrentUser(r)
+	isAdmin := user != nil && user.IsAdmin
+
+	if !isAdmin && ownerID != userID {
 		log.Printf("⚠️ Unauthorized toggle attempt: user %d tried to toggle wallpaper owned by %d", userID, ownerID)
 		http.Error(w, "Unauthorized", http.StatusForbidden)
 		return

@@ -91,16 +91,27 @@
                                 <span class="button-icon">🗑️</span>
                                 <span class="button-label">Delete</span>
                             </button>
-
+                            {{if not .IsPublic}}
                             <form action="/toreview" method="POST" style="display:inline;">
                                 <input type="hidden" name="wallpaper_id" value="{{.ID}}">
                                 <button type="submit" class="action-button publish-button">
                                     <span class="button-icon">🌍</span>
                                     <span class="button-label">
-                                     {{if .IsPublic}}Unpublish{{else}}Make Public{{end}}
+                                    Make Public
                                     </span>
                                 </button>
                             </form>
+                            {{else}}
+                            <form action="/publish" method="POST" style="display:inline;">
+                                <input type="hidden" name="wallpaper_id" value="{{.ID}}">
+                                <button type="submit" class="action-button publish-button">
+                                    <span class="button-icon">🌍</span>
+                                    <span class="button-label">
+                                     Unpublish
+                                    </span>
+                                </button>
+                            </form>
+                            {{end}}
                         </div>
                     </div>
                 </div>
