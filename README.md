@@ -46,7 +46,7 @@ Each user can manage their own wallpapers and interact with others through socia
 
 [V] Wallpaper upload
 
-[~] Private/Public management with admin approval
+[V] Private/Public management with admin approval
 
 [ ] Tags and collections
 

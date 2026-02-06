@@ -68,11 +68,11 @@ func AdminpannelHandler(w http.ResponseWriter, r *http.Request) {
 		allUsers = append(allUsers, u)
 	}
 
-	// Prepare data for template
 	data := AdminPanelData{
 		CurrentUser: user,
 		AllUsers:    allUsers,
 		Wallpapers:  wallpapers,
+		CSRFToken:   GetCSRFToken(r),
 	}
 
 	if err := templates.ExecuteTemplate(w, "adminpannel.html", data); err != nil {

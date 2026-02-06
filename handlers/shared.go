@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"wp-manager/security"
 )
 
 var (
@@ -36,6 +37,7 @@ type AdminPanelData struct {
 	CurrentUser *UserProfile
 	AllUsers    []UserProfile
 	Wallpapers  []Wallpaper
+	CSRFToken   string
 }
 
 type Wallpaper struct {
@@ -53,16 +55,21 @@ type WallpapersPageData struct {
 	Wallpapers []Wallpaper
 	Username   string
 	IsAdmin    bool
+	ToReview   bool
+	CSRFToken  string
 }
 
 type PageData struct {
-	Username string
-	IsAdmin  bool
+	Username  string
+	IsAdmin   bool
+	CSRFToken string
 }
 
 // returns page data with user info
 func getPageData(r *http.Request) PageData {
-	data := PageData{}
+	data := PageData{
+		CSRFToken: GetCSRFToken(r),
+	}
 	user := getCurrentUser(r)
 	if user != nil {
 		data.Username = user.Username
@@ -133,4 +140,19 @@ func printAllUsers() {
 		fmt.Printf("ID: %d | Username: %s | Email: %s | Name: %s %s | Created: %s\n",
 			id, username, email, name, surname, createdAt.Format("2006-01-02 15:04:05"))
 	}
+}
+
+// returns CSRF token for the current session
+func GetCSRFToken(r *http.Request) string {
+	cookie, err := r.Cookie("session_id")
+	if err != nil {
+		return ""
+	}
+
+	token := security.Manager.GetToken(cookie.Value)
+	if token == "" {
+		token, _ = security.Manager.GenerateToken(cookie.Value)
+	}
+
+	return token
 }

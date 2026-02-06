@@ -10,8 +10,8 @@ import (
 	"os"
 	"strings"
 	"time"
-
 	"wp-manager/handlers"
+	"wp-manager/security"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -78,7 +78,7 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-
+	go cleanupExpiredCSRFTokens()
 	log.Printf("🚀 Server running on http://localhost:%s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
@@ -154,23 +154,38 @@ func initDatabase() error {
 	return nil
 }
 
-// Register all HTTP routes
+func cleanupExpiredCSRFTokens() {
+	ticker := time.NewTicker(1 * time.Hour)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		log.Println("🧹 Cleaning up expired CSRF tokens...")
+	}
+}
+
+// HTTP routes
 func registerRoutes() {
 	http.HandleFunc("/", handlers.IndexHandler)
 	http.HandleFunc("/community", handlers.CommunityHandler)
-	http.HandleFunc("/wallpapers", handlers.WallpapersHandler)
-	http.HandleFunc("/register", handlers.RegisterHandler)
-	http.HandleFunc("/login", handlers.LoginHandler)
-	http.HandleFunc("/profile", handlers.ProfileHandler)
-	http.HandleFunc("/logout", handlers.LogoutHandler)
-	http.HandleFunc("/upload", handlers.UploadHandler)
-	http.HandleFunc("/rename", handlers.RenameHandler)
-	http.HandleFunc("/adminpannel", handlers.AdminpannelHandler)
-	http.HandleFunc("/admin/promote", handlers.PromoteUserHandler)
-	http.HandleFunc("/admin/demote", handlers.DemoteUserHandler)
-	http.HandleFunc("/admin/deleteacc", handlers.DeleteAccHandler)
-	http.HandleFunc("/forgot-password", handlers.ForgotpasswordHandler)
-	http.HandleFunc("/publish", handlers.PublishHandler)
-	http.HandleFunc("/toreview", handlers.ReviewHandler)
+
+	// Auth routes
+	http.HandleFunc("/login", security.Middleware(handlers.LoginHandler))
+	http.HandleFunc("/register", security.Middleware(handlers.RegisterHandler))
+	http.HandleFunc("/logout", security.Middleware(handlers.LogoutHandler))
+
+	// Protected routes
+	http.HandleFunc("/wallpapers", security.Middleware(handlers.WallpapersHandler))
+	http.HandleFunc("/profile", security.Middleware(handlers.ProfileHandler))
+	http.HandleFunc("/upload", security.Middleware(handlers.UploadHandler))
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
+	http.HandleFunc("/rename", security.Middleware(handlers.RenameHandler))
+	http.HandleFunc("/publish", security.Middleware(handlers.PublishHandler))
+	http.HandleFunc("/toreview", security.Middleware(handlers.ReviewHandler))
+
+	// Admin routes
+	http.HandleFunc("/adminpannel", security.Middleware(handlers.AdminpannelHandler))
+	http.HandleFunc("/admin/promote", security.Middleware(handlers.PromoteUserHandler))
+	http.HandleFunc("/admin/demote", security.Middleware(handlers.DemoteUserHandler))
+	http.HandleFunc("/admin/deleteacc", security.Middleware(handlers.DeleteAccHandler))
+
 }

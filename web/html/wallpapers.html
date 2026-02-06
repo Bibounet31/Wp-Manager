@@ -42,6 +42,7 @@
         </h2>
 
         <form action="/upload" method="POST" enctype="multipart/form-data" class="upload-form">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
             <div class="upload-card">
                 <label for="wallpaper" class="upload-label">
                     <span class="upload-icon">🖼</span>
@@ -66,6 +67,7 @@
         {{if .Wallpapers}}
         <div class="spell-grid">
             {{range .Wallpapers}}
+            <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
             <div class="wallpaper-card" data-wallpaper-id="{{.ID}}">
                 <div class="wallpaper-image-container">
                     <img src="/uploads/{{.Filename}}" alt="{{.OriginalName}}" class="wallpaper-image">
@@ -91,8 +93,10 @@
                                 <span class="button-icon">🗑️</span>
                                 <span class="button-label">Delete</span>
                             </button>
-                            {{if not .IsPublic}}
+
+                            {{if and (not .IsPublic) (not .ToReview)}}
                             <form action="/toreview" method="POST" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
                                 <input type="hidden" name="wallpaper_id" value="{{.ID}}">
                                 <button type="submit" class="action-button publish-button">
                                     <span class="button-icon">🌍</span>
@@ -101,13 +105,27 @@
                                     </span>
                                 </button>
                             </form>
-                            {{else}}
+                            {{end}}
+                            {{if and (.IsPublic) (not .ToReview)}}
                             <form action="/publish" method="POST" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
                                 <input type="hidden" name="wallpaper_id" value="{{.ID}}">
                                 <button type="submit" class="action-button publish-button">
                                     <span class="button-icon">🌍</span>
                                     <span class="button-label">
                                      Unpublish
+                                    </span>
+                                </button>
+                            </form>
+                            {{end}}
+                            {{if and (not .IsPublic) (.ToReview)}}
+                            <form action="/toreview" method="POST" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{$.CSRFToken}}">
+                                <input type="hidden" name="wallpaper_id" value="{{.ID}}">
+                                <button type="submit" class="action-button publish-button">
+                                    <span class="button-icon">🌍</span>
+                                    <span class="button-label">
+                                    Sent for review!
                                     </span>
                                 </button>
                             </form>
