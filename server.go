@@ -130,8 +130,8 @@ func initDatabase() error {
 	}
 
 	_, err = db.Exec(`
-	DROP TABLE IF EXISTS wallpapers;
-`)
+		DROP TABLE IF EXISTS wallpapers;
+	`)
 
 	_, err = db.Exec(`
 		CREATE TABLE wallpapers (
@@ -173,5 +173,6 @@ func registerRoutes() {
 	http.HandleFunc("/publish", handlers.PublishHandler)
 	http.HandleFunc("/toreview", handlers.ReviewHandler)
 	http.HandleFunc("/denypublish", handlers.DenyHandler)
+	http.HandleFunc("/unpublish", handlers.UnpublishHandler)
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }
