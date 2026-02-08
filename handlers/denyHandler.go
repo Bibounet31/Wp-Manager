@@ -6,13 +6,12 @@ import (
 	"net/http"
 )
 
-func PublishHandler(w http.ResponseWriter, r *http.Request) {
+func DenyHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("DenyHandler called :3")
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
-	log.Println("TogglePublishHandler called")
 
 	// Parse form data
 	if err := r.ParseForm(); err != nil {
@@ -34,11 +33,11 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// check if wallpaper is owned by user + get current ispublic status
+	// check if wallpaper is owned by user + get current toreview status
 	var ownerID int
-	var isPublic bool
-	err = db.QueryRow("SELECT user_id, COALESCE(ispublic, 0) FROM wallpapers WHERE id = ?", wallpaperID).
-		Scan(&ownerID, &isPublic)
+	var toReview bool
+	err = db.QueryRow("SELECT user_id, COALESCE(toreview, 0) FROM wallpapers WHERE id = ?", wallpaperID).
+		Scan(&ownerID, &toReview)
 	if err != nil {
 		log.Println("Wallpaper not found:", err)
 		http.Error(w, "Wallpaper not found", http.StatusNotFound)
@@ -53,22 +52,20 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unauthorized", http.StatusForbidden)
 		return
 	}
-
-	// Toggle the ispublic status
+	// Toggle the toReview status
 	var result sql.Result
-	if isPublic {
-		// if public > make it private
-		result, err = db.Exec("UPDATE wallpapers SET ispublic = 0 WHERE id = ?", wallpaperID)
+	if toReview {
+		// if ==1, make it 0
+		result, err = db.Exec("UPDATE wallpapers SET toreview = 0 WHERE id = ?", wallpaperID)
 		if err != nil {
 			log.Println("Failed to unpublish wallpaper:", err)
 			http.Error(w, "Failed to unpublish wallpaper", http.StatusInternalServerError)
 			return
 		}
-
 		log.Printf("Wallpaper %s unpublished by user %d", wallpaperID, userID)
 	} else {
-		// if private > make it public
-		result, err = db.Exec("UPDATE wallpapers SET ispublic = 1, toreview = 0 WHERE id = ?", wallpaperID)
+		// if ==0, make it 1
+		result, err = db.Exec("UPDATE wallpapers SET toreview = 0 WHERE id = ?", wallpaperID)
 		if err != nil {
 			log.Println("Failed to publish wallpaper:", err)
 			http.Error(w, "Failed to publish wallpaper", http.StatusInternalServerError)

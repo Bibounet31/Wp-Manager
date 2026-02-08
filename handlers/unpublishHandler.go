@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func PublishHandler(w http.ResponseWriter, r *http.Request) {
+func UnpublishHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -83,5 +83,5 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
+	http.Redirect(w, r, "/wallpapers", http.StatusSeeOther)
 }
