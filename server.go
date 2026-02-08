@@ -174,5 +174,7 @@ func registerRoutes() {
 	http.HandleFunc("/toreview", handlers.ReviewHandler)
 	http.HandleFunc("/denypublish", handlers.DenyHandler)
 	http.HandleFunc("/unpublish", handlers.UnpublishHandler)
+	http.HandleFunc("/deletewp", handlers.DeletewpHandler)
+	http.HandleFunc("/addfavorite", handlers.AddfavoriteHandler)
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }

@@ -84,15 +84,18 @@
                                 <span class="button-icon">✏️</span>
                                 <span class="button-label">Rename</span>
                             </button>
-                            <a href="#" class="action-button favorite-button" data-wallpaper-id="{{.ID}}">
+                            <form action="/addfavorite" method="POST">
+                            <button type="submit"class="action-button favorite-button" data-wallpaper-id="{{.ID}}">
                                 <span class="button-icon">❤️</span>
                                 <span class="button-label">Favorite</span>
-                            </a>
-                            <button class="action-button delete-button" data-wallpaper-id="{{.ID}}">
+                            </button>
+                            </form>
+                            <form action="/deletewp" method="POST" >
+                            <button type="submit" class="action-button delete-button" data-wallpaper-id="{{.ID}}">
                                 <span class="button-icon">🗑️</span>
                                 <span class="button-label">Delete</span>
                             </button>
-
+                            </form>
                             {{if and (not .IsPublic) (not .ToReview)}}
                             <form action="/toreview" method="POST" style="display:inline;">
                                 <input type="hidden" name="wallpaper_id" value="{{.ID}}">
