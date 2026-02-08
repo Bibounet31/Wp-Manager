@@ -172,5 +172,6 @@ func registerRoutes() {
 	http.HandleFunc("/forgot-password", handlers.ForgotpasswordHandler)
 	http.HandleFunc("/publish", handlers.PublishHandler)
 	http.HandleFunc("/toreview", handlers.ReviewHandler)
+	http.HandleFunc("/denypublish", handlers.DenyHandler)
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }
