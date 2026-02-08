@@ -25,7 +25,7 @@ func main() {
 
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
-		log.Println("⚠️  Using local database")
+		log.Println("Using local database")
 		dsn = "wpmanager:secret123@tcp(127.0.0.1:3306)/wallpaper_manager?parseTime=true"
 	} else {
 		dsn = parseScalingoDSN(dbURL)
@@ -47,7 +47,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println("✅ Connected to database!")
+	log.Println("Connected to db >.<")
 
 	if err := initDatabase(); err != nil {
 		log.Fatal(err)
@@ -79,7 +79,7 @@ func main() {
 		port = "8080"
 	}
 
-	log.Printf("🚀 Server running on http://localhost:%s", port)
+	log.Printf("Server running on http://localhost:%s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
@@ -150,7 +150,7 @@ func initDatabase() error {
 		return fmt.Errorf("wallpapers table: %w", err)
 	}
 
-	log.Println("✅ Database tables initialized!")
+	log.Println("Database tables initialized~")
 	return nil
 }
 
