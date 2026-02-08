@@ -28,6 +28,7 @@
 
 <div class="magic-particles"></div>
 
+
 <main class="tome-content">
     <section class="upload-spell">
         <div class="spell-circle-small">
@@ -91,7 +92,8 @@
                                 <span class="button-icon">🗑️</span>
                                 <span class="button-label">Delete</span>
                             </button>
-                            {{if not .IsPublic}}
+
+                            {{if and (not .IsPublic) (not .ToReview)}}
                             <form action="/toreview" method="POST" style="display:inline;">
                                 <input type="hidden" name="wallpaper_id" value="{{.ID}}">
                                 <button type="submit" class="action-button publish-button">
@@ -101,13 +103,25 @@
                                     </span>
                                 </button>
                             </form>
-                            {{else}}
+                            {{end}}
+                            {{if and (.IsPublic) (not .ToReview)}}
                             <form action="/publish" method="POST" style="display:inline;">
                                 <input type="hidden" name="wallpaper_id" value="{{.ID}}">
                                 <button type="submit" class="action-button publish-button">
                                     <span class="button-icon">🌍</span>
                                     <span class="button-label">
                                      Unpublish
+                                    </span>
+                                </button>
+                            </form>
+                            {{end}}
+                            {{if and (not .IsPublic) (.ToReview)}}
+                            <form action="/toreview" method="POST" style="display:inline;">
+                                <input type="hidden" name="wallpaper_id" value="{{.ID}}">
+                                <button type="submit" class="action-button publish-button">
+                                    <span class="button-icon">⏳</span>
+                                    <span class="button-label">
+                                    Cancel Review
                                     </span>
                                 </button>
                             </form>

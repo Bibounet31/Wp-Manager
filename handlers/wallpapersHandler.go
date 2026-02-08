@@ -21,7 +21,7 @@ func WallpapersHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Get user's wallpapers
 	rows, err := db.Query(`
-		SELECT id, filename, original_name, uploaded_at, ispublic
+		SELECT id, filename, original_name, uploaded_at, ispublic, toreview
 		FROM wallpapers 
 		WHERE user_id = ? 
 		ORDER BY uploaded_at DESC`, userID)
@@ -35,7 +35,7 @@ func WallpapersHandler(w http.ResponseWriter, r *http.Request) {
 	var wallpapers []Wallpaper
 	for rows.Next() {
 		var w Wallpaper
-		if err := rows.Scan(&w.ID, &w.Filename, &w.OriginalName, &w.UploadedAt, &w.IsPublic); err != nil {
+		if err := rows.Scan(&w.ID, &w.Filename, &w.OriginalName, &w.UploadedAt, &w.IsPublic, &w.ToReview); err != nil {
 			log.Println("Row scan error:", err)
 			continue
 		}
