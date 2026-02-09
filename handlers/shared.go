@@ -50,9 +50,10 @@ type Wallpaper struct {
 }
 
 type WallpapersPageData struct {
-	Wallpapers []Wallpaper
-	Username   string
-	IsAdmin    bool
+	Wallpapers  []Wallpaper
+	CurrentUser *UserProfile
+	Username    string
+	IsAdmin     bool
 }
 
 type PageData struct {

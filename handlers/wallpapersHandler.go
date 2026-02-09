@@ -43,9 +43,10 @@ func WallpapersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := WallpapersPageData{
-		Wallpapers: wallpapers,
-		Username:   user.Username,
-		IsAdmin:    user.IsAdmin,
+		Wallpapers:  wallpapers,
+		Username:    user.Username,
+		IsAdmin:     user.IsAdmin,
+		CurrentUser: user,
 	}
 	if err := templates.ExecuteTemplate(w, "wallpapers.html", data); err != nil {
 		log.Println("Template error:", err)

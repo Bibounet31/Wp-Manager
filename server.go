@@ -150,6 +150,24 @@ func initDatabase() error {
 	//	return fmt.Errorf("wallpapers table: %w", err)
 	//}
 
+	// ✅ Create comments table
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS comments (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			wallpaper_id INT NOT NULL,
+			user_id INT NOT NULL,
+			text TEXT NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (wallpaper_id) REFERENCES wallpapers(id) ON DELETE CASCADE,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+			INDEX idx_wallpaper (wallpaper_id),
+			INDEX idx_created (created_at)
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("comments table: %w", err)
+	}
+
 	log.Println("Database tables initialized~")
 	return nil
 }
@@ -165,7 +183,7 @@ func registerRoutes() {
 	http.HandleFunc("/logout", handlers.LogoutHandler)
 	http.HandleFunc("/upload", handlers.UploadHandler)
 	http.HandleFunc("/rename", handlers.RenameHandler)
-	http.HandleFunc("/adminpannel", handlers.AdminpannelHandler)
+	http.HandleFunc("/adminpanel", handlers.AdminpannelHandler)
 	http.HandleFunc("/admin/promote", handlers.PromoteUserHandler)
 	http.HandleFunc("/admin/demote", handlers.DemoteUserHandler)
 	http.HandleFunc("/admin/deleteacc", handlers.DeleteAccHandler)
@@ -176,5 +194,11 @@ func registerRoutes() {
 	http.HandleFunc("/unpublish", handlers.UnpublishHandler)
 	http.HandleFunc("/deletewp", handlers.DeletewpHandler)
 	http.HandleFunc("/addfavorite", handlers.AddfavoriteHandler)
+	http.HandleFunc("/rate", handlers.RateHandler)
+
+	// ✅ Comment API routes
+	http.HandleFunc("/api/comments/", handlers.GetCommentsHandler)
+	http.HandleFunc("/api/comments", handlers.PostCommentHandler)
+
 	http.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir("web/uploads"))))
 }

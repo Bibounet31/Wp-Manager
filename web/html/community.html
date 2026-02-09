@@ -22,7 +22,7 @@
         <a href="/wallpapers" class="nav-spell">My wallpapers</a>
         <a href="/profile" class="nav-spell">Profile</a>
         {{if .IsAdmin}}
-        <a href="/adminpannel" class="nav-spell">ADMIN PANNEL UWU</a>
+        <a href="/adminpanel" class="nav-spell">ADMIN PANEL UWU</a>
         {{end}}
     </nav>
     <div class="header-ornament right"></div>
@@ -105,10 +105,12 @@
                                 <span class="button-icon">⬇️</span>
                                 <span class="button-label">Download</span>
                             </a>
-                            <a href="#" class="action-button favorite-button" data-wallpaper-id="{{.ID}}">
-                                <span class="button-icon">❤️</span>
-                                <span class="button-label">Favorite</span>
-                            </a>
+                            <form action="/addfavorite" method="POST" style="display:inline;">
+                                <input type="hidden" name="wallpaper_id" value="{{.ID}}">
+                                <button type="submit" class="action-button favorite-button">
+                                    <span class="button-icon">❤️</span>
+                                    <span class="button-label">Favorite</span>
+                                </button>
                             </form>
                         </div>
                     </div>
