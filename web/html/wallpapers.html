@@ -85,16 +85,16 @@
                                 <span class="button-label">Rename</span>
                             </button>
                             <form action="/addfavorite" method="POST">
-                            <button type="submit"class="action-button favorite-button" data-wallpaper-id="{{.ID}}">
-                                <span class="button-icon">❤️</span>
-                                <span class="button-label">Favorite</span>
-                            </button>
+                                <button type="submit"class="action-button favorite-button" data-wallpaper-id="{{.ID}}">
+                                    <span class="button-icon">❤️</span>
+                                    <span class="button-label">Favorite</span>
+                                </button>
                             </form>
                             <form action="/deletewp" method="POST" >
-                            <button type="submit" class="action-button delete-button" data-wallpaper-id="{{.ID}}">
-                                <span class="button-icon">🗑️</span>
-                                <span class="button-label">Delete</span>
-                            </button>
+                                <button type="submit" class="action-button delete-button" data-wallpaper-id="{{.ID}}">
+                                    <span class="button-icon">🗑️</span>
+                                    <span class="button-label">Delete</span>
+                                </button>
                             </form>
                             {{if and (not .IsPublic) (not .ToReview)}}
                             <form action="/toreview" method="POST" style="display:inline;">
@@ -158,5 +158,7 @@
 <script src="/scripts/scrollsave.js"></script>
 <script src="/scripts/rename.js"></script>
 <script src="/scripts/wallpaper-compact.js"></script>
+
+
 </body>
 </html>

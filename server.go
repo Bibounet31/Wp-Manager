@@ -129,26 +129,26 @@ func initDatabase() error {
 		return fmt.Errorf("sessions table: %w", err)
 	}
 
-	_, err = db.Exec(`
-		DROP TABLE IF EXISTS wallpapers;
-	`)
-
-	_, err = db.Exec(`
-		CREATE TABLE wallpapers (
-			id INT AUTO_INCREMENT PRIMARY KEY,
-			user_id INT NOT NULL,
-			filename VARCHAR(255) NOT NULL,
-			original_name VARCHAR(255) NOT NULL,
-			file_path VARCHAR(500) NOT NULL,
-			uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			toreview bool NOT NULL DEFAULT false,
-		    ispublic bool NOT NULL DEFAULT false,
-			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-		);
-	`)
-	if err != nil {
-		return fmt.Errorf("wallpapers table: %w", err)
-	}
+	//_, err = db.Exec(`
+	//	DROP TABLE IF EXISTS wallpapers;
+	//`)
+	//
+	//_, err = db.Exec(`
+	//	CREATE TABLE wallpapers (
+	//		id INT AUTO_INCREMENT PRIMARY KEY,
+	//		user_id INT NOT NULL,
+	//		filename VARCHAR(255) NOT NULL,
+	//		original_name VARCHAR(255) NOT NULL,
+	//		file_path VARCHAR(500) NOT NULL,
+	//		uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	//		toreview bool NOT NULL DEFAULT false,
+	//	    ispublic bool NOT NULL DEFAULT false,
+	//		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	//	);
+	//`)
+	//if err != nil {
+	//	return fmt.Errorf("wallpapers table: %w", err)
+	//}
 
 	log.Println("Database tables initialized~")
 	return nil

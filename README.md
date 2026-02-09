@@ -54,7 +54,7 @@ Each user can manage their own wallpapers and interact with others through socia
 
 [~] Favorites
 
-[ ] Ratings and comments
+[IN PROGRESS (i'm workjing on it right now uwu)] Ratings and comments
 
 [ ] Friend system
 
