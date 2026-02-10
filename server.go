@@ -99,8 +99,11 @@ func parseScalingoDSN(dbURL string) string {
 	return fmt.Sprintf("%s@tcp(%s)/%s?parseTime=true", credentials, host, dbName)
 }
 
-// Initialize database tables
+// init all dbs:
+
 func initDatabase() error {
+
+	//user table
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
 			id INT AUTO_INCREMENT PRIMARY KEY,
@@ -117,6 +120,7 @@ func initDatabase() error {
 		return fmt.Errorf("users table: %w", err)
 	}
 
+	//session table
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS sessions (
 			id VARCHAR(36) PRIMARY KEY,
@@ -128,6 +132,8 @@ func initDatabase() error {
 	if err != nil {
 		return fmt.Errorf("sessions table: %w", err)
 	}
+
+	// table wallpapers
 
 	//_, err = db.Exec(`
 	//	DROP TABLE IF EXISTS wallpapers;
@@ -150,7 +156,7 @@ func initDatabase() error {
 	//	return fmt.Errorf("wallpapers table: %w", err)
 	//}
 
-	// ✅ Create comments table
+	// table comments
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS comments (
 			id INT AUTO_INCREMENT PRIMARY KEY,
@@ -196,7 +202,7 @@ func registerRoutes() {
 	http.HandleFunc("/addfavorite", handlers.AddfavoriteHandler)
 	http.HandleFunc("/rate", handlers.RateHandler)
 
-	// ✅ Comment API routes
+	// API routes
 	http.HandleFunc("/api/comments/", handlers.GetCommentsHandler)
 	http.HandleFunc("/api/comments", handlers.PostCommentHandler)
 

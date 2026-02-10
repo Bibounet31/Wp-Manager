@@ -64,7 +64,7 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request) {
 		comments = append(comments, c)
 	}
 
-	// Return empty array instead of null if no comments
+	// Return empty array if no comments
 	if comments == nil {
 		comments = []Comment{}
 	}
@@ -124,7 +124,7 @@ func PostCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	commentID, _ := result.LastInsertId()
-	log.Printf("✅ Comment posted: ID=%d, User=%d, Wallpaper=%d", commentID, userID, req.WallpaperID)
+	log.Printf("Comment posted: ID=%d, User=%d, Wallpaper=%d", commentID, userID, req.WallpaperID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

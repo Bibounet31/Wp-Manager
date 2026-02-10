@@ -1,6 +1,33 @@
 // Wallpaper Modal with Comments
 let currentWallpaperId = null;
 
+// Add click listeners to wallpaper cards
+document.addEventListener('DOMContentLoaded', function() {
+    const wallpaperCards = document.querySelectorAll('.wallpaper-card');
+
+    wallpaperCards.forEach(card => {
+        const imageContainer = card.querySelector('.wallpaper-image-container');
+
+        if (imageContainer) {
+            imageContainer.addEventListener('click', function(e) {
+                // Don't open modal if clicking on buttons/forms/links
+                if (e.target.closest('button') || e.target.closest('a') || e.target.closest('form')) {
+                    return;
+                }
+
+                // Get wallpaper data
+                const wallpaperId = card.dataset.wallpaperId;
+                const image = card.querySelector('.wallpaper-image');
+                const title = card.querySelector('h3').textContent;
+                const date = card.querySelector('.upload-date').textContent;
+
+                // Open the modal
+                openWallpaperModal(wallpaperId, image.src, title, date);
+            });
+        }
+    });
+});
+
 function openWallpaperModal(wallpaperId, imageUrl, title, date) {
     currentWallpaperId = wallpaperId;
 
