@@ -29,7 +29,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function openWallpaperModal(wallpaperId, imageUrl, title, date) {
-    currentWallpaperId = wallpaperId;
+    // Convert to integer to ensure proper JSON serialization
+    currentWallpaperId = parseInt(wallpaperId, 10);
 
     const modal = document.getElementById('wallpaperModal');
     const modalImage = document.getElementById('modalImage');
@@ -47,7 +48,7 @@ function openWallpaperModal(wallpaperId, imageUrl, title, date) {
     document.body.style.overflow = 'hidden'; // Prevent background scrolling
 
     // Load comments for this wallpaper
-    loadComments(wallpaperId);
+    loadComments(currentWallpaperId);
 }
 
 function closeWallpaperModal() {
