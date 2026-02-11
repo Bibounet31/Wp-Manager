@@ -77,15 +77,13 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request) {
 		comments = []Comment{}
 	}
 
-	log.Printf("✅ Returning %d comments\n", len(comments))
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(comments)
 }
 
 // PostCommentHandler creates a new comment
 func PostCommentHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("📤 PostCommentHandler called")
+	log.Println("PostCommentHandler called")
 	log.Println("Method:", r.Method)
 	log.Println("Path:", r.URL.Path)
 
@@ -96,7 +94,7 @@ func PostCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method != http.MethodPost {
-		log.Println("❌ Wrong method:", r.Method)
+		log.Println("Wrong method:", r.Method)
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
@@ -114,17 +112,15 @@ func PostCommentHandler(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	log.Println("✅ User ID from session:", userID)
 
 	// Parse request body
 	var req CommentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		log.Println("❌ Invalid request body:", err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	log.Printf("📝 Request: WallpaperID=%d, Text length=%d\n", req.WallpaperID, len(req.Text))
+	log.Printf("Request: WallpaperID=%d, Text length=%d\n", req.WallpaperID, len(req.Text))
 
 	// Validate input
 	if req.WallpaperID <= 0 {
@@ -152,10 +148,10 @@ func PostCommentHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Wallpaper not found", http.StatusNotFound)
 		return
 	}
-	log.Println("✅ Wallpaper exists")
+	log.Println("Wallpaper exists")
 
 	// Insert comment
-	log.Println("💾 Inserting comment into database...")
+	log.Println("Inserting comment into database...")
 	result, err := db.Exec(`
        INSERT INTO comments (wallpaper_id, user_id, text, created_at)
        VALUES (?, ?, ?, NOW())
@@ -167,7 +163,7 @@ func PostCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	commentID, _ := result.LastInsertId()
-	log.Printf("✅ Comment posted successfully: ID=%d, User=%d, Wallpaper=%d\n", commentID, userID, req.WallpaperID)
+	log.Printf("Comment posted successfully: ID=%d, User=%d, Wallpaper=%d\n", commentID, userID, req.WallpaperID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

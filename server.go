@@ -99,11 +99,10 @@ func parseScalingoDSN(dbURL string) string {
 	return fmt.Sprintf("%s@tcp(%s)/%s?parseTime=true", credentials, host, dbName)
 }
 
-// init all dbs:
-
+// init all dbs
 func initDatabase() error {
 
-	//user table
+	// User table
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
 			id INT AUTO_INCREMENT PRIMARY KEY,
@@ -120,7 +119,7 @@ func initDatabase() error {
 		return fmt.Errorf("users table: %w", err)
 	}
 
-	//session table
+	// Session table
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS sessions (
 			id VARCHAR(36) PRIMARY KEY,
@@ -133,30 +132,25 @@ func initDatabase() error {
 		return fmt.Errorf("sessions table: %w", err)
 	}
 
-	// table wallpapers
+	// Wallpapers table
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS wallpapers (
+			id INT AUTO_INCREMENT PRIMARY KEY,
+			user_id INT NOT NULL,
+			filename VARCHAR(255) NOT NULL,
+			original_name VARCHAR(255) NOT NULL,
+			file_path VARCHAR(500) NOT NULL,
+			uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			toreview BOOL NOT NULL DEFAULT false,
+			ispublic BOOL NOT NULL DEFAULT false,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+		)
+	`)
+	if err != nil {
+		return fmt.Errorf("wallpapers table: %w", err)
+	}
 
-	//_, err = db.Exec(`
-	//	DROP TABLE IF EXISTS wallpapers;
-	//`)
-	//
-	//_, err = db.Exec(`
-	//	CREATE TABLE wallpapers (
-	//		id INT AUTO_INCREMENT PRIMARY KEY,
-	//		user_id INT NOT NULL,
-	//		filename VARCHAR(255) NOT NULL,
-	//		original_name VARCHAR(255) NOT NULL,
-	//		file_path VARCHAR(500) NOT NULL,
-	//		uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	//		toreview bool NOT NULL DEFAULT false,
-	//	    ispublic bool NOT NULL DEFAULT false,
-	//		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-	//	);
-	//`)
-	//if err != nil {
-	//	return fmt.Errorf("wallpapers table: %w", err)
-	//}
-
-	// table comments
+	// Comments table
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS comments (
 			id INT AUTO_INCREMENT PRIMARY KEY,
