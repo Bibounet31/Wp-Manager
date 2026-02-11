@@ -83,5 +83,5 @@ func PublishHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
+	http.Redirect(w, r, "/adminpanel", http.StatusSeeOther)
 }

@@ -133,18 +133,20 @@ func initDatabase() error {
 		return fmt.Errorf("sessions table: %w", err)
 	}
 
+	//// comment all drops if /uploads are not deleted when container boot..
+//drop comments
+	_, err = db.Exec(`
+		DROP TABLE IF EXISTS comments;`)
+	log.Println(err)
+//drop wallpapers
+	_, err = db.Exec(`
+		DROP TABLE IF EXISTS wallpapers;`)
+	log.Println(err)
+
 	// table wallpapers
 
 	_, err = db.Exec(`
-		DROP TABLE IF EXISTS wallpapers;`)
-	if err != nil {
-		_, err = db.Exec(`
-		DROP TABLE IF EXISTS comments;`)
-		return fmt.Errorf("wallpapers table: %w", err)
-	}
-
-	_, err = db.Exec(`
-		CREATE TABLE wallpapers (
+		CREATE TABLE IF NOT EXISTS wallpapers (
 			id INT AUTO_INCREMENT PRIMARY KEY,
 			user_id INT NOT NULL,
 			filename VARCHAR(255) NOT NULL,
