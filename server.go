@@ -138,9 +138,11 @@ func initDatabase() error {
 	_, err = db.Exec(`
 		DROP TABLE IF EXISTS wallpapers;`)
 	if err != nil {
+		_, err = db.Exec(`
+		DROP TABLE IF EXISTS comments;`)
 		return fmt.Errorf("wallpapers table: %w", err)
 	}
-	
+
 	_, err = db.Exec(`
 		CREATE TABLE wallpapers (
 			id INT AUTO_INCREMENT PRIMARY KEY,
