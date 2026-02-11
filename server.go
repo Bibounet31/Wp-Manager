@@ -137,6 +137,9 @@ func initDatabase() error {
 
 	_, err = db.Exec(`
 		DROP TABLE IF EXISTS wallpapers;`)
+	if err != nil {
+		return fmt.Errorf("wallpapers table: %w", err)
+	}
 	
 	_, err = db.Exec(`
 		CREATE TABLE wallpapers (
