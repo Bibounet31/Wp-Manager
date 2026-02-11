@@ -133,10 +133,12 @@ func initDatabase() error {
 		return fmt.Errorf("sessions table: %w", err)
 	}
 
+	//// comment all drops if /uploads are not deleted when container boot..
+	//drop comments
 	_, err = db.Exec(`
 		DROP TABLE IF EXISTS comments;`)
 	log.Println(err)
-
+	//drop wallpapers
 	_, err = db.Exec(`
 		DROP TABLE IF EXISTS wallpapers;`)
 	log.Println(err)
@@ -161,7 +163,6 @@ func initDatabase() error {
 	}
 
 	// table comments
-
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS comments (
 			id INT AUTO_INCREMENT PRIMARY KEY,
