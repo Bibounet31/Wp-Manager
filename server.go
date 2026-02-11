@@ -133,10 +133,15 @@ func initDatabase() error {
 		return fmt.Errorf("sessions table: %w", err)
 	}
 
-	// table wallpapers
+	_, err = db.Exec(`
+		DROP TABLE IF EXISTS comments;`)
+	log.Println(err)
 
 	_, err = db.Exec(`
 		DROP TABLE IF EXISTS wallpapers;`)
+	log.Println(err)
+
+	// table wallpapers
 
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS wallpapers (
@@ -156,6 +161,7 @@ func initDatabase() error {
 	}
 
 	// table comments
+
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS comments (
 			id INT AUTO_INCREMENT PRIMARY KEY,
