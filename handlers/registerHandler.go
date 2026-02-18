@@ -49,7 +49,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		printAllUsers()
+		//printAllUsers()
 
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
