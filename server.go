@@ -9,8 +9,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"time"
-
 	"wp-manager/handlers"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -23,37 +21,34 @@ func main() {
 	var err error
 	var dsn string
 
+	//connect to db..
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
 		log.Println("Using local database")
 		dsn = "wpmanager:secret123@tcp(127.0.0.1:3306)/wallpaper_manager?parseTime=true"
 	} else {
-		dsn = parseScalingoDSN(dbURL)
+		dsn = convertScalingoDSN(dbURL)
 	}
-
 	log.Println("🔍 Using DSN:", dsn)
 
+	// error handling
 	db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Connection pool
-	db.SetMaxOpenConns(25)
-	db.SetMaxIdleConns(25)
-	db.SetConnMaxLifetime(5 * time.Minute)
-
+	// check if we can reach the db
 	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
-
 	log.Println("Connected to db >.<")
 
+	//logs if error from initDatabase()
 	if err := initDatabase(); err != nil {
 		log.Fatal(err)
 	}
 
-	// Parse templates
+	// create template> so we can inject code directly into the html
 	templates = template.Must(
 		template.New("").
 			Funcs(template.FuncMap{
@@ -67,7 +62,6 @@ func main() {
 	handlers.SetDB(db)
 	handlers.SetTemplates(templates)
 
-	// Register routes
 	registerRoutes()
 
 	// Static files
@@ -84,23 +78,20 @@ func main() {
 }
 
 // Convert Scalingo DSN
-func parseScalingoDSN(dbURL string) string {
-	dbURL = strings.TrimPrefix(dbURL, "mysql://")
-	dbURL = strings.Split(dbURL, "?")[0]
+func convertScalingoDSN(dbURL string) string {
+	u, err := url.Parse(dbURL)
+	if err != nil {
+		log.Fatal("invalid DATABASE_URL:", err)
+	}
 
-	parts := strings.SplitN(dbURL, "@", 2)
-	credentials := parts[0]
-	hostAndDb := parts[1]
-
-	hostParts := strings.SplitN(hostAndDb, "/", 2)
-	host := hostParts[0]
-	dbName := hostParts[1]
+	credentials := u.User.String()
+	host := u.Host
+	dbName := strings.TrimPrefix(u.Path, "/")
 
 	return fmt.Sprintf("%s@tcp(%s)/%s?parseTime=true", credentials, host, dbName)
 }
 
 // init all dbs:
-
 func initDatabase() error {
 
 	//user table
@@ -133,18 +124,17 @@ func initDatabase() error {
 		return fmt.Errorf("sessions table: %w", err)
 	}
 
-	//// comment all drops if /uploads are not deleted when container boot..
-	//drop comments
+	// comment all drops if /uploads are not deleted when container boot..
+	//--------------------------------------------------
+	//comments (since wallpaper are removed)
 	_, err = db.Exec(`
 		DROP TABLE IF EXISTS comments;`)
-	log.Println(err)
-	//drop wallpapers
+	//wallpapers
 	_, err = db.Exec(`
 		DROP TABLE IF EXISTS wallpapers;`)
-	log.Println(err)
+	///-----------------------------------------------------------
 
 	// table wallpapers
-
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS wallpapers (
 			id INT AUTO_INCREMENT PRIMARY KEY,
@@ -184,7 +174,7 @@ func initDatabase() error {
 	return nil
 }
 
-// Register all HTTP routes
+// Register routes.. obviously
 func registerRoutes() {
 	http.HandleFunc("/", handlers.IndexHandler)
 	http.HandleFunc("/community", handlers.CommunityHandler)
@@ -208,7 +198,7 @@ func registerRoutes() {
 	http.HandleFunc("/addfavorite", handlers.AddfavoriteHandler)
 	http.HandleFunc("/rate", handlers.RateHandler)
 
-	// API routes
+	// API routes, get/post a comment without reloading the page ^^
 	http.HandleFunc("/api/comments/", handlers.GetCommentsHandler)
 	http.HandleFunc("/api/comments", handlers.PostCommentHandler)
 
