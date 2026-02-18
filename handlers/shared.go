@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"time"
 )
@@ -114,24 +113,21 @@ func getCurrentUser(r *http.Request) *UserProfile {
 }
 
 // prints all users to console
-func printAllUsers() {
-	rows, err := db.Query("SELECT id, username, email, name, surname, created_at FROM users")
-	if err != nil {
-		log.Println("Failed to query users:", err)
-		return
-	}
-	defer rows.Close()
-
-	fmt.Println("📋 Current users in the database:")
-	for rows.Next() {
-		var id int
-		var username, email, name, surname string
-		var createdAt time.Time
-		if err := rows.Scan(&id, &username, &email, &name, &surname, &createdAt); err != nil {
-			log.Println("Row scan error:", err)
-			continue
-		}
-		fmt.Printf("ID: %d | Username: %s | Email: %s | Name: %s %s | Created: %s\n",
-			id, username, email, name, surname, createdAt.Format("2006-01-02 15:04:05"))
-	}
-}
+//func printAllUsers() {
+//	rows, err := db.Query("SELECT id, username, email, name, surname, created_at FROM users")
+//	if err != nil {
+//		log.Println("Failed to query users:", err)
+//		return
+//	}
+//	defer rows.Close()
+//
+//	fmt.Println("Users stored in db:")
+//	for rows.Next() {
+//		var id int
+//		var username, email, name, surname string
+//		var createdAt time.Time
+//		rows.Scan(&id, &username, &email, &name, &surname, &createdAt)
+//		fmt.Printf("ID: %d | Username: %s | Email: %s | Name: %s %s | Created: %s\n",
+//			id, username, email, name, surname, createdAt.Format("2006-01-02 15:04:05"))
+//	}
+//}
