@@ -200,10 +200,6 @@ body {
     background: radial-gradient(circle, var(--glow-effect), transparent);
 }
 
-@keyframes rotate-slow {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
 
 .hero-text {
     font-size: 2rem;
