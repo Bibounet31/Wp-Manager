@@ -70,7 +70,7 @@ func ReviewHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to publish wallpaper", http.StatusInternalServerError)
 			return
 		}
-		log.Printf("Wallpaper %s published by user %d", wallpaperID, userID)
+		log.Printf("Wallpaper %s was sent for review by %d", wallpaperID, userID)
 	}
 
 	rows, err := result.RowsAffected()
