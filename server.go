@@ -12,6 +12,7 @@ import (
 	"wp-manager/handlers"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 var db *sql.DB
@@ -19,16 +20,17 @@ var templates *template.Template
 
 func main() {
 	var err error
-	var dsn string
 
-	//connect to db..
+	//get data from .env
+	godotenv.Load()
+
 	dbURL := os.Getenv("DATABASE_URL")
 	if dbURL == "" {
-		log.Println("Using local database")
-		dsn = "wpmanager:secret123@tcp(127.0.0.1:3306)/wallpaper_manager?parseTime=true"
-	} else {
-		dsn = convertScalingoDSN(dbURL)
+		log.Fatal("DATABASE_URL is not set")
 	}
+
+	dsn := convertScalingoDSN(dbURL)
+
 	log.Println("🔍 Using DSN:", dsn)
 
 	// error handling
