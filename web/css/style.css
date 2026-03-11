@@ -54,8 +54,10 @@ body {
 .grimoire-header {
     position: relative;
     z-index: 10;
-    padding: var(--space-lg) var(--space-md);
-    text-align: center;
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background: rgba(45, 27, 61, 0.6);
     backdrop-filter: blur(10px);
     border-bottom: 2px solid var(--ethereal-lavender);
@@ -63,29 +65,22 @@ body {
 }
 
 .header-ornament {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 100px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--spell-gold), transparent);
+    display: none;
 }
 
-.header-ornament.left { left: var(--space-md); }
-.header-ornament.right { right: var(--space-md); }
-
 .site-title {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     font-weight: 300;
     letter-spacing: 0.15em;
     color: var(--moonlight);
-    margin-bottom: var(--space-md);
+    margin-bottom: 0;
     text-shadow: 0 0 20px var(--glow-effect);
+    flex-shrink: 0;
 }
 
 .title-rune {
     color: var(--spell-gold);
-    font-size: 1rem;
+    font-size: 0.9rem;
     vertical-align: middle;
     animation: pulse-glow 2s ease-in-out infinite;
 }
@@ -102,29 +97,21 @@ body {
     display: flex;
     justify-content: center;
     gap: var(--space-lg);
-    margin-top: var(--space-md);
+    margin-top: 0;
 }
 
 .nav-spell {
     color: var(--ethereal-lavender);
     text-decoration: none;
-    font-size: 1.1rem;
-    padding: var(--space-xs) var(--space-md);
+    font-size: 1rem;
+    padding: var(--space-xs) var(--space-sm);
     border-bottom: 2px solid transparent;
     transition: all 0.3s ease;
     letter-spacing: 0.05em;
     position: relative;
+    white-space: nowrap;
 }
 
-.nav-spell::before {
-    content: '✦';
-    position: absolute;
-    left: 0;
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: all 0.3s ease;
-    color: var(--spell-gold);
-}
 
 .nav-spell:hover,
 .nav-spell.active {
@@ -135,7 +122,6 @@ body {
 .nav-spell:hover::before,
 .nav-spell.active::before {
     opacity: 1;
-    transform: translateX(-15px);
 }
 
 /* ─────────────────────────────────────────────────────────────── */

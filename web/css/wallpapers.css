@@ -136,7 +136,7 @@
 }
 
 /* ─────────────────────────────────────────────────────────────── */
-/* WALLPAPER GALLERY - RESPONSIVE 5-COLUMN BRICK LAYOUT */
+/* WALLPAPER GALLERY - MASONRY BRICK LAYOUT */
 /* ─────────────────────────────────────────────────────────────── */
 .wallpaper-gallery {
     margin-top: var(--space-xl);
@@ -144,15 +144,11 @@
 }
 
 .spell-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-lg);
-    max-width: 1200px;
-    margin: 0 auto;
+    display: block;
+    column-count: 5;
+    column-gap: 15px;
+    width: 100%;
 }
-
-
 
 .wallpaper-card {
     break-inside: avoid;
@@ -236,7 +232,7 @@
 
 .wallpaper-info h3 {
     color: var(--frost-white);
-    font-size: 0.95rem; /* Slightly smaller for 5-column layout */
+    font-size: 0.95rem;
     margin-bottom: 2px;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
     word-wrap: break-word;
@@ -280,7 +276,6 @@
     box-sizing: border-box;
 }
 
-
 .action-button .button-label {
     display: none;
 }
@@ -294,18 +289,16 @@
     border-color: var(--spell-gold);
 }
 
-
-
 /* ─────────────────────────────────────────────────────────────── */
 /* RESPONSIVE DESIGN - BREAKPOINTS */
 /* ─────────────────────────────────────────────────────────────── */
 
-/* Desktop/Large Screens (1400px+) - 5 Columns */
+/* Desktop/Large Screens (1400px+) - 4 Columns */
 @media (min-width: 1400px) {
     .spell-grid { column-count: 4; }
 }
 
-/* Standard Laptops (1100px - 1399px) - 4 Columns */
+/* Standard Laptops (1100px - 1399px) - 3 Columns */
 @media (max-width: 1399px) {
     .spell-grid { column-count: 3; }
 }
@@ -329,21 +322,20 @@
 /* Phones (Below 480px) - 1 Column */
 @media (max-width: 480px) {
     .spell-grid { column-count: 1; }
-}
 
-.wallpaper-image {
-    transform: scale(1.24);
-}
+    .wallpaper-image {
+        transform: scale(1.24);
+    }
 
-.wallpaper-card {
-    margin-bottom: 10px;
-    border-width: 1.5px;
-}
+    .wallpaper-card {
+        margin-bottom: 10px;
+        border-width: 1.5px;
+    }
 
-.wallpaper-overlay {
-    padding: 6px;
+    .wallpaper-overlay {
+        padding: 6px;
+    }
 }
-
 
 /* ─────────────────────────────────────────────────────────────── */
 /* TITLES & KEYFRAMES */
