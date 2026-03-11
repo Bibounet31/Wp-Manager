@@ -18,11 +18,11 @@ profile.cov
 # Go workspace file
 go.work
 go.work.sum
+go.mod
+go.sum
+
 
 # env file
 .env
 # my crap
 notes
-
-go.mod
-go.sum

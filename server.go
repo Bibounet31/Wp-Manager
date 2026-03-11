@@ -144,6 +144,7 @@ func initDatabase() error {
 			filename VARCHAR(255) NOT NULL,
 			original_name VARCHAR(255) NOT NULL,
 			file_path VARCHAR(500) NOT NULL,
+			category VARCHAR(50) DEFAULT 'other',
 			uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			toreview bool NOT NULL DEFAULT false,
 		    ispublic bool NOT NULL DEFAULT false,

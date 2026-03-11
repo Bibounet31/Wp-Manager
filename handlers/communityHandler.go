@@ -5,19 +5,56 @@ import (
 	"net/http"
 )
 
+type CategoryStats struct {
+	Name  string
+	Icon  string
+	Desc  string
+	Count int
+}
+
+type CommunityPageData struct {
+	Categories []CategoryStats
+	Wallpapers []Wallpaper
+	Username   string
+	IsAdmin    bool
+}
+
 func CommunityHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
+	// Define your categories
+	categories := []CategoryStats{
+		{Name: "Anime", Icon: "🌙", Desc: "Checkout all our anime wallpapers!"},
+		{Name: "Landscapes", Icon: "🌸", Desc: "some grass?"},
+		{Name: "other", Icon: "📁", Desc: "Miscellaneous wallpapers"},
+	}
+
+	// Get counts for each category
+	for i := range categories {
+		var count int
+		err := db.QueryRow(`
+			SELECT COUNT(*) 
+			FROM wallpapers 
+			WHERE category = ? AND ispublic = 1
+		`, categories[i].Name).Scan(&count)
+
+		if err != nil {
+			log.Println("Failed to count wallpapers for", categories[i].Name, ":", err)
+			count = 0
+		}
+		categories[i].Count = count
+	}
+
 	// Get all public wallpapers
 	rows, err := db.Query(`
-       SELECT id, filename, original_name, uploaded_at, ispublic
-       FROM wallpapers 
-       WHERE ispublic = 1
-       ORDER BY uploaded_at DESC
-    `)
+		SELECT id, filename, original_name, uploaded_at, ispublic
+		FROM wallpapers 
+		WHERE ispublic = 1
+		ORDER BY uploaded_at DESC
+	`)
 	if err != nil {
 		log.Println("Failed to query wallpapers:", err)
 		http.Error(w, "Failed to load wallpapers", http.StatusInternalServerError)
@@ -45,7 +82,8 @@ func CommunityHandler(w http.ResponseWriter, r *http.Request) {
 		isAdmin = user.IsAdmin
 	}
 
-	data := WallpapersPageData{
+	data := CommunityPageData{
+		Categories: categories,
 		Wallpapers: wallpapers,
 		Username:   username,
 		IsAdmin:    isAdmin,

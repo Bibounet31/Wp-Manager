@@ -40,47 +40,23 @@
     </section>
 
     <section class="spell-grid">
+        {{range .Categories}}
         <div class="spell-card">
             <div class="card-header">
-                <span class="card-icon">🌙</span>
-                <h3>Lunar Collection</h3>
+                <span class="card-icon">{{.Icon}}</span>
+                <h3>{{.Name}}</h3>
             </div>
             <div class="card-body">
-                <p>Wallpapers bathed in moonlight and mystery</p>
+                <p>{{.Desc}}</p>
                 <div class="card-stats">
-                    <span class="stat">✦ 24 images</span>
-                    <span class="stat">⭐ Favorites</span>
+                    <span class="stat">✦ {{.Count}} images</span>
                 </div>
             </div>
+        </div>
+        {{end}}
         </div>
 
-        <div class="spell-card">
-            <div class="card-header">
-                <span class="card-icon">🌸</span>
-                <h3>Spring Memories</h3>
-            </div>
-            <div class="card-body">
-                <p>Fleeting moments of blooming beauty</p>
-                <div class="card-stats">
-                    <span class="stat">✦ 18 images</span>
-                    <span class="stat">🔒 Private</span>
-                </div>
-            </div>
-        </div>
 
-        <div class="spell-card">
-            <div class="card-header">
-                <span class="card-icon">⚡</span>
-                <h3>Action Scenes</h3>
-            </div>
-            <div class="card-body">
-                <p>Dynamic moments captured forever</p>
-                <div class="card-stats">
-                    <span class="stat">✦ 32 images</span>
-                    <span class="stat">👥 Shared</span>
-                </div>
-            </div>
-        </div>
     </section>
 
     <section class="featured-tome">

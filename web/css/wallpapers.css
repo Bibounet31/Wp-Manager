@@ -144,11 +144,15 @@
 }
 
 .spell-grid {
-    display: block;
-    column-count: 5;
-    column-gap: 15px;
-    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-lg);
+    max-width: 1200px;
+    margin: 0 auto;
 }
+
+
 
 .wallpaper-card {
     break-inside: avoid;

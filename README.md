@@ -42,7 +42,7 @@ Each user can manage their own wallpapers and interact with others through socia
 
 [V] MySQL database connection
 
-[~] Authentication system
+[V] Authentication system
 
 [V] Wallpaper upload
 
