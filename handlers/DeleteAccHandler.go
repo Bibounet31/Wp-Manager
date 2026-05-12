@@ -53,5 +53,5 @@ func DeleteAccHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("✅ User %s deleted by admin", userID)
-	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
+	http.Redirect(w, r, "/adminpanel", http.StatusSeeOther)
 }
