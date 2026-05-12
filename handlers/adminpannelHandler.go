@@ -75,7 +75,7 @@ func AdminpannelHandler(w http.ResponseWriter, r *http.Request) {
 		Wallpapers:  wallpapers,
 	}
 
-	if err := templates.ExecuteTemplate(w, "adminpannel.html", data); err != nil {
+	if err := templates.ExecuteTemplate(w, "adminpanel.html", data); err != nil {
 		log.Println("Template error:", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 	}
