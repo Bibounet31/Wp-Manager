@@ -45,5 +45,5 @@ func PromoteUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("✅ User %s promoted to admin", username)
 	// Redirect back to admin panel
-	http.Redirect(w, r, "/adminpannel", http.StatusSeeOther)
+	http.Redirect(w, r, "/adminpanel", http.StatusSeeOther)
 }
